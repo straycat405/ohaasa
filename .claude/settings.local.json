@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:www.asahi.co.jp)",
+      "WebSearch",
+      "WebFetch(domain:ohaasa.pages.dev)"
+    ]
+  }
+}

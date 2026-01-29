@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Star, Sparkles, Crown } from 'lucide-react';
+import { Star, Sparkles, Crown, Gift } from 'lucide-react';
 
 interface Horoscope {
-  rank: string;
-  jpName: string;
-  ko: string;
-  en: string;
-  content: string;
+  rank: number;
+  zodiac: {
+    jp: string;
+    ko: string;
+    en: string;
+  };
+  content: {
+    ko: string;
+    en: string;
+  };
+  lucky: {
+    ko: string;
+    en: string;
+  };
 }
 
 interface HoroscopeData {
@@ -42,19 +51,37 @@ function App() {
     i18n.changeLanguage(lng);
   };
 
-  const getSignName = (item: Horoscope) => {
-    if (i18n.language === 'ko') return item.ko;
-    if (i18n.language === 'en') return item.en;
-    return item.jpName;
+  const getZodiacName = (item: Horoscope) => {
+    if (i18n.language === 'ko') return item.zodiac.ko;
+    if (i18n.language === 'en') return item.zodiac.en;
+    return item.zodiac.jp;
   };
 
-  const getRankClass = (rank: string) => {
+  const getContent = (item: Horoscope) => {
+    if (i18n.language === 'en') return item.content.en;
+    return item.content.ko;
+  };
+
+  const getLucky = (item: Horoscope) => {
+    if (i18n.language === 'en') return item.lucky.en;
+    return item.lucky.ko;
+  };
+
+  const getRankClass = (rank: number) => {
     switch (rank) {
-      case '1': return 'rank-1';
-      case '2': return 'rank-2';
-      case '3': return 'rank-3';
+      case 1: return 'rank-1';
+      case 2: return 'rank-2';
+      case 3: return 'rank-3';
       default: return 'rank-default';
     }
+  };
+
+  // Format date for display (e.g., 20260130 -> 1月30日 or 1/30)
+  const formatDisplayDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const month = parseInt(dateStr.substring(4, 6));
+    const day = parseInt(dateStr.substring(6, 8));
+    return i18n.language === 'ja' ? `${month}月${day}日` : `${month}/${day}`;
   };
 
   if (loading) {
@@ -81,7 +108,7 @@ function App() {
                 <Star className="w-6 h-6 text-purple-500 fill-purple-200" />
                 {t('title')}
               </h1>
-              <p className="text-sm text-slate-500 mt-1">{data?.date} | {t('subtitle')}</p>
+              <p className="text-sm text-slate-500 mt-1">{formatDisplayDate(data?.date)} | {t('subtitle')}</p>
             </div>
 
             <div className="flex bg-purple-50 p-1 rounded-full">
@@ -106,37 +133,48 @@ function App() {
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="space-y-4">
-          {data?.horoscope.map((item, index) => (
+          {data?.horoscope.sort((a, b) => a.rank - b.rank).map((item, index) => (
             <div
               key={index}
-              className={`horoscope-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden ${
-                item.rank === '1' ? 'top-card shadow-lg' : ''
+              className={`horoscope-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all hover:shadow-md ${
+                item.rank === 1 ? 'ring-2 ring-purple-100 shadow-lg' : ''
               }`}
             >
               <div className="p-5">
                 <div className="flex items-start gap-4">
                   {/* Rank Badge */}
-                  <div className={`rank-badge ${getRankClass(item.rank)}`}>
-                    {item.rank === '1' ? <Crown className="w-4 h-4" /> : item.rank}
+                  <div className={`rank-badge shrink-0 ${getRankClass(item.rank)}`}>
+                    {item.rank === 1 ? <Crown className="w-4 h-4" /> : item.rank}
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-lg font-bold text-slate-800">
-                        {getSignName(item)}
+                      <h2 className="text-xl font-bold text-slate-800">
+                        {getZodiacName(item)}
                       </h2>
-                      {item.rank === '1' && (
-                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      {item.rank === 1 && (
+                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-white text-xs font-bold px-3 py-1 rounded-full animate-bounce">
                           <Sparkles className="w-3 h-3" />
                           LUCKY
                         </span>
                       )}
                     </div>
 
-                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                      {item.content}
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-4">
+                      {getContent(item)}
                     </p>
+
+                    {/* Lucky Item Section */}
+                    <div className="bg-rose-50/50 rounded-xl p-3 flex items-center gap-3 border border-rose-100/50">
+                      <div className="bg-rose-100 p-2 rounded-lg">
+                        <Gift className="w-4 h-4 text-rose-500" />
+                      </div>
+                      <div className="text-sm">
+                        <span className="font-bold text-rose-600 mr-2">{i18n.language === 'en' ? 'Lucky Secret:' : '행운의 비법:'}</span>
+                        <span className="text-rose-500 font-medium">{getLucky(item)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -151,7 +189,7 @@ function App() {
           {t('title')} &copy; 2026
         </p>
         <p className="text-slate-300 text-xs mt-1">
-          Data from Asahi TV
+          Powered by Gemini AI | Data from Asahi TV
         </p>
       </footer>
     </div>
