@@ -17,27 +17,35 @@ export async function onRequest(context) {
   try {
     const response = await fetch('https://www.asahi.co.jp/ohaasa/week/horoscope/', {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
       }
     });
 
     const html = await response.text();
     const horoscopeData = [];
 
-    // Extract Date
-    let dateText = new Date().toLocaleDateString();
-    const dateMatch = html.match(/(\d+月\d+日（.）の運勢)/);
-    if (dateMatch && dateMatch[1]) {
+    // Extract date (e.g., "1月29日(木)の運勢")
+    let dateText = new Date().toLocaleDateString('ja-JP');
+    const dateMatch = html.match(/(\d+月\d+日.{1,5}の運勢)/);
+    if (dateMatch) {
       dateText = dateMatch[1];
     }
 
-    // Extract horoscope data using regex
-    const horoscopeRegex = /(\d+)\s+([^\s]+)\s+([\s\S]+?)(?=(\d+)\s+([^\s]+)|\s*$)/g;
+    // Parse horoscope items using regex on the HTML structure
+    // Pattern: <li class="rank{N} {sign}">...<span class="horo_rank">{rank}</span>...<span class="horo_name...">{name}</span>...<dd class="horo_txt">{content}</dd>
+    const itemRegex = /<li\s+class="rank(\d+)\s+\w+"[\s\S]*?<span\s+class="horo_rank"[^>]*>[\s\S]*?(\d+)[\s\S]*?<\/span>[\s\S]*?<span\s+class="horo_name[^"]*"[^>]*>(.*?)<\/span>[\s\S]*?<dd\s+class="horo_txt"[^>]*>([\s\S]*?)<\/dd>/gi;
+
     let match;
-    while ((match = horoscopeRegex.exec(html)) !== null) {
-      const rank = match[1];
-      const jpName = match[2];
-      const content = match[3].trim();
+    while ((match = itemRegex.exec(html)) !== null) {
+      const rank = match[2].trim();
+      const jpName = match[3].trim();
+      const content = match[4].trim()
+        .replace(/<[^>]*>/g, '') // Remove HTML tags
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
       if (zodiacMap[jpName]) {
         horoscopeData.push({
@@ -49,17 +57,24 @@ export async function onRequest(context) {
       }
     }
 
+    // Sort by rank
+    horoscopeData.sort((a, b) => parseInt(a.rank) - parseInt(b.rank));
+
     return new Response(JSON.stringify({
       date: dateText,
-      horoscope: horoscopeData.sort((a, b) => parseInt(a.rank) - parseInt(b.rank))
+      horoscope: horoscopeData
     }), {
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=3600'
       }
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
+    return new Response(JSON.stringify({
+      error: 'Failed to fetch data',
+      message: error.message
+    }), {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
