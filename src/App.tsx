@@ -52,19 +52,19 @@ function App() {
   };
 
   const getZodiacName = (item: Horoscope) => {
-    if (i18n.language === 'ko') return item.zodiac.ko;
-    if (i18n.language === 'en') return item.zodiac.en;
-    return item.zodiac.jp;
+    if (i18n.language === 'ko') return item.zodiac?.ko || '';
+    if (i18n.language === 'en') return item.zodiac?.en || '';
+    return item.zodiac?.jp || '';
   };
 
   const getContent = (item: Horoscope) => {
-    if (i18n.language === 'en') return item.content.en;
-    return item.content.ko;
+    if (i18n.language === 'en') return item.content?.en || '';
+    return item.content?.ko || '';
   };
 
   const getLucky = (item: Horoscope) => {
-    if (i18n.language === 'en') return item.lucky.en;
-    return item.lucky.ko;
+    if (i18n.language === 'en') return item.lucky?.en || '';
+    return item.lucky?.ko || '';
   };
 
   const getRankClass = (rank: number) => {
@@ -79,19 +79,43 @@ function App() {
   // Format date for display (e.g., 20260130 -> 1月30日 or 1/30)
   const formatDisplayDate = (dateStr?: string) => {
     if (!dateStr) return '';
-    const month = parseInt(dateStr.substring(4, 6));
-    const day = parseInt(dateStr.substring(6, 8));
-    return i18n.language === 'ja' ? `${month}月${day}日` : `${month}/${day}`;
+    try {
+      const month = parseInt(dateStr.substring(4, 6));
+      const day = parseInt(dateStr.substring(6, 8));
+      return i18n.language === 'ja' ? `${month}月${day}일` : `${month}/${day}`;
+    } catch (e) {
+      return dateStr;
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse shadow-lg">
             <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <p className="text-lg font-medium text-purple-600">{t('loading')}</p>
+          <p className="text-lg font-medium text-purple-600 font-display">{t('loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data?.horoscope) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center p-8 bg-white rounded-3xl shadow-sm border border-slate-100 max-w-sm mx-4">
+          <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Star className="w-8 h-8 text-rose-400" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">데이터를 불러올 수 없습니다</h2>
+          <p className="text-slate-500 text-sm">현재 운세 정보를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-6 px-6 py-2 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transition-colors"
+          >
+            새로고침
+          </button>
         </div>
       </div>
     );

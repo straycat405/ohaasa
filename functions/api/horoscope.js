@@ -20,9 +20,9 @@ export async function onRequest(context) {
 
     // 2. Check KV Cache
     if (CACHE) {
-      const cachedData = await CACHE.get(`horoscope_${dateStr}`);
+      const cachedData = await CACHE.get(`horoscope_v2_${dateStr}`);
       if (cachedData) {
-        console.log('Cache hit for date:', dateStr);
+        console.log('Cache hit for date (v2):', dateStr);
         return new Response(cachedData, {
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ Return only valid JSON.
 
     // 5. Save to KV Cache
     if (CACHE) {
-      await CACHE.put(`horoscope_${dateStr}`, translatedJson, { expirationTtl: 86400 }); // 24 hours
+      await CACHE.put(`horoscope_v2_${dateStr}`, translatedJson, { expirationTtl: 86400 }); // 24 hours
     }
 
     return new Response(translatedJson, {
