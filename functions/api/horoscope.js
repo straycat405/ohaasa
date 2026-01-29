@@ -1,4 +1,4 @@
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export async function onRequest(context) {
   const { env } = context;
@@ -25,9 +25,9 @@ export async function onRequest(context) {
     const dateStr = item?.onair_date;
     if (!dateStr || !item.detail) throw new Error('Source data format invalid');
 
-    // 2. Cache Check (v4)
+    // 2. Cache Check (v5)
     if (CACHE) {
-      const cached = await CACHE.get(`horo_v4_${dateStr}`);
+      const cached = await CACHE.get(`horo_v5_${dateStr}`);
       if (cached) {
         return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT' } });
       }
@@ -49,15 +49,16 @@ Format:
 
 Source:
 ${content}
+
+Return ONLY valid JSON.
 `;
 
-    // 4. Gemini Request
+    // 4. Gemini Request (Simplified body for maximum compatibility)
     const geminiRes = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { response_mime_type: "application/json" }
+        contents: [{ parts: [{ text: prompt }] }]
       })
     });
 
@@ -67,14 +68,14 @@ ${content}
     const rawText = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!rawText) throw new Error('Gemini returned no text content');
 
-    // Clean and Validate
+    // Clean and Validate (Robust regex-based cleaning)
     const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
     const finalObj = JSON.parse(cleanJson);
     const finalStr = JSON.stringify(finalObj);
 
     // 5. Cache Save
     if (CACHE) {
-      context.waitUntil(CACHE.put(`horo_v4_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
+      context.waitUntil(CACHE.put(`horo_v5_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
     }
 
     return new Response(finalStr, { headers: { ...headers, 'X-Cache': 'MISS' } });
