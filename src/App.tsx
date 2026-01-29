@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Globe, Star, Sparkles } from 'lucide-react';
+import { Star, Sparkles } from 'lucide-react';
 
 interface Horoscope {
   rank: string;
