@@ -20,6 +20,27 @@
   - "lucky item" 파싱/표시 로직 구현
   - 스크래핑 개선 검토
 
+### Git 커밋 및 푸시
+- **커밋**: `601e885` - 스크래핑 로직 개선 및 작업 이력 추가
+- **변경 파일**: server/index.js, CHANGELOG.md, horoscope.html, install.cmd
+- **삭제 파일**: scriptforgemini.txt
+- **푸시 완료**: origin/master
+
+### Cloudflare Pages 배포 문제 수정
+- **문제**: MIME type 에러로 흰 화면 발생
+- **원인**: Cloudflare Pages 빌드 설정 미비
+- **수정**:
+  - `src/App.tsx`: 미사용 import 제거 (빌드 에러 해결)
+  - `public/_redirects`: SPA 라우팅 설정 추가
+- **커밋**: `387a8d6`
+- **추가 이슈**: 백엔드 API가 localhost를 바라봄 (Cloudflare Workers 필요)
+
+### Cloudflare Workers로 백엔드 이전
+- **신규**: `functions/api/horoscope.js` - Pages Functions로 스크래핑 API 구현
+- **수정**: `src/App.tsx` - 환경별 API URL 분기 (DEV: localhost:3001, PROD: /api/horoscope)
+- **커밋**: `cf46bc3`
+- **결과**: Cloudflare Pages 재배포 시 백엔드 API 자동 포함
+
 ---
 
 ## 이전 작업 (Initial Commit 이후)
