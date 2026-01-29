@@ -34,20 +34,21 @@ app.get('/api/horoscope', async (req, res) => {
     const horoscopeData = [];
 
     // Extract Date
-    const dateText = $('.date').text().trim() || new Date().toLocaleDateString();
+    let dateText = new Date().toLocaleDateString(); // Default to current date
+    const bodyText = $('body').text();
+    const dateMatch = bodyText.match(/(\d+月\d+日（.）の運勢)/);
+    if (dateMatch && dateMatch[1]) {
+        dateText = dateMatch[1];
+    }
 
-    // The structure seems to be in list items or divs. 
-    // Based on typical scraping, let's try to target the ranking items.
-    // I'll look for elements that contain numbers 1-12.
-    $('ul.list li').each((i, el) => {
-        const text = $(el).text().trim();
-        // Match Rank, Name, and Content
-        const match = text.match(/^(\d+)\s+([^\s]+)\s+([\s\S]+)$/);
-        if (match) {
-            const rank = match[1];
-            const jpName = match[2];
-            const content = match[3];
-            
+    const horoscopeRegex = /(\d+)\s+([^\s]+)\s+([\s\S]+?)(?=(\d+)\s+([^\s]+)|\s*$)/g;
+    let match;
+    while ((match = horoscopeRegex.exec(bodyText)) !== null) {
+        const rank = match[1];
+        const jpName = match[2];
+        const content = match[3].trim(); // Trim content
+
+        if (zodiacMap[jpName]) {
             horoscopeData.push({
                 rank,
                 jpName,
@@ -55,24 +56,6 @@ app.get('/api/horoscope', async (req, res) => {
                 content
             });
         }
-    });
-
-    // Fallback if the selector is different (Asahi site often changes)
-    if (horoscopeData.length === 0) {
-        // Try another approach: finding the sign names directly
-        Object.keys(zodiacMap).forEach(jpName => {
-            const element = $(`li:contains("${jpName}")`);
-            if (element.length > 0) {
-                const text = element.text().trim();
-                const rankMatch = text.match(/^(\d+)/);
-                horoscopeData.push({
-                    rank: rankMatch ? rankMatch[1] : '?',
-                    jpName,
-                    ...zodiacMap[jpName],
-                    content: text.replace(/^\d+\s+[^\s]+\s+/, '')
-                });
-            }
-        });
     }
 
     res.json({
