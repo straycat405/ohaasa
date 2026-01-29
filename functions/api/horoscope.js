@@ -1,4 +1,4 @@
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 export async function onRequest(context) {
   const { env } = context;
@@ -22,7 +22,6 @@ export async function onRequest(context) {
     if (CACHE) {
       const cachedData = await CACHE.get(`horoscope_v2_${dateStr}`);
       if (cachedData) {
-        console.log('Cache hit for date (v2):', dateStr);
         return new Response(cachedData, {
           headers: {
             'Content-Type': 'application/json',

@@ -82,7 +82,7 @@ function App() {
     try {
       const month = parseInt(dateStr.substring(4, 6));
       const day = parseInt(dateStr.substring(6, 8));
-      return i18n.language === 'ja' ? `${month}月${day}일` : `${month}/${day}`;
+      return i18n.language === 'ja' ? `${month}月${day}日` : `${month}/${day}`;
     } catch (e) {
       return dateStr;
     }
