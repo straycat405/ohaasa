@@ -5,76 +5,54 @@ export async function onRequest(context) {
   const CACHE = env.CACHE;
   const API_KEY = env.GEMINI_API_KEY;
 
-  if (!API_KEY) {
-    return new Response(JSON.stringify({ error: 'Config error', message: 'GEMINI_API_KEY is missing' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
-  }
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
 
   try {
-    // 1. Fetch raw data from Asahi TV
-    const response = await fetch('https://www.asahi.co.jp/data/ohaasa2020/horoscope.json', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json',
-      }
+    // 1. Fetch raw data
+    const res = await fetch('https://www.asahi.co.jp/data/ohaasa2020/horoscope.json', {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
     });
+    
+    if (!res.ok) throw new Error(`External source failed: ${res.status}`);
+    
+    const rawData = await res.json();
+    const item = Array.isArray(rawData) ? rawData[0] : rawData;
+    const dateStr = item?.onair_date;
+    if (!dateStr || !item.detail) throw new Error('Source data format invalid');
 
-    if (!response.ok) {
-        throw new Error(`Asahi TV fetch failed: ${response.status}`);
-    }
-
-    const jsonData = await response.json();
-    const data = Array.isArray(jsonData) ? jsonData[0] : jsonData;
-    if (!data || !data.detail) {
-        throw new Error('Invalid data format from Asahi TV');
-    }
-    const dateStr = data.onair_date;
-
-    // 2. Check KV Cache
+    // 2. Cache Check (v4)
     if (CACHE) {
-      const cachedData = await CACHE.get(`horoscope_v3_${dateStr}`);
-      if (cachedData) {
-        return new Response(cachedData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'X-Cache': 'HIT'
-          }
-        });
+      const cached = await CACHE.get(`horo_v4_${dateStr}`);
+      if (cached) {
+        return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT' } });
       }
     }
 
-    // 3. Prepare data for Gemini
-    const rawHoroscopeText = data.detail.map(item => {
-      return `Rank: ${item.ranking_no}\nZodiac: ${item.horoscope_st}\nText: ${item.horoscope_text}`;
-    }).join('\n\n');
-
+    // 3. Gemini Prompt
+    const content = item.detail.map(d => `Rank: ${d.ranking_no}, Sign: ${d.horoscope_st}, Text: ${d.horoscope_text}`).join('\n');
     const prompt = `
-You are a professional astrologer and translator.
-I will provide you with Japanese horoscope data from Asahi TV.
-Please translate it into Korean and English, and return it strictly in JSON format.
-
-Input Data:
-${rawHoroscopeText}
+Return horoscope data for ${dateStr} as JSON. 
+Provide translations in Korean, English, AND keep the original Japanese.
 
 Requirements:
-1. Return a JSON object with a "date" field and a "horoscope" array.
-2. The "date" field should be the on-air date (e.g., "${dateStr}").
-3. Each item in the "horoscope" array must have:
-   - "rank": (number) The ranking.
-   - "zodiac": (object) { "jp": "Japanese Name", "ko": "Korean Name", "en": "English Name" }
-   - "content": (object) { "jp": "Original Japanese fortune text", "ko": "Korean Translation of fortune", "en": "English Translation of fortune" }
-   - "lucky": (object) { "jp": "Original Japanese lucky item text", "ko": "Korean Translation of lucky item/action", "en": "English Translation of lucky item/action" }
+- zodiac: { jp, ko, en }
+- content: { jp, ko, en }
+- lucky: { jp, ko, en } (Extract lucky item/action from the end of the text)
 
-Note: The Japanese text often contains the lucky item/action at the end (e.g., "とんかつ를食べる", "グレー의服を着る"). Please separate this into the "lucky" field and provide the original Japanese text in the "jp" field for both content and lucky.
+Format:
+{"date": "${dateStr}", "horoscope": [{"rank": 1, "zodiac": {...}, "content": {...}, "lucky": {...}}, ...]}
 
-Return only valid JSON.
+Source:
+${content}
 `;
 
-    // 4. Call Gemini API
-    const geminiResponse = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+    // 4. Gemini Request
+    const geminiRes = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -83,60 +61,29 @@ Return only valid JSON.
       })
     });
 
-    const geminiResult = await geminiResponse.json();
+    const geminiJson = await geminiRes.json();
+    if (geminiJson.error) throw new Error(`Gemini: ${geminiJson.error.message}`);
     
-    if (geminiResult.error) {
-        throw new Error(`Gemini API Error: ${geminiResult.error.message || JSON.stringify(geminiResult.error)}`);
-    }
+    const rawText = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!rawText) throw new Error('Gemini returned no text content');
 
-    if (!geminiResult.candidates || !geminiResult.candidates[0] || !geminiResult.candidates[0].content) {
-        throw new Error(`Invalid Gemini response structure: ${JSON.stringify(geminiResult)}`);
-    }
+    // Clean and Validate
+    const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
+    const finalObj = JSON.parse(cleanJson);
+    const finalStr = JSON.stringify(finalObj);
 
-    const resultText = geminiResult.candidates[0].content.parts[0].text;
-    
-    // Clean potential markdown blocks
-    const cleanJson = resultText.replace(/```json\n?|```/g, '').trim();
-    
-    // Validate JSON before returning
-    let finalData;
-    try {
-        finalData = JSON.parse(cleanJson);
-    } catch (e) {
-        throw new Error(`Gemini returned invalid JSON: ${e.message}. Raw: ${cleanJson.substring(0, 100)}...`);
-    }
-
-    const translatedJson = JSON.stringify(finalData);
-
-    // 5. Save to KV Cache (non-blocking)
+    // 5. Cache Save
     if (CACHE) {
-      context.waitUntil(
-        CACHE.put(`horoscope_v3_${dateStr}`, translatedJson, { expirationTtl: 86400 })
-          .catch(e => console.error('KV Cache Put Error:', e))
-      );
+      context.waitUntil(CACHE.put(`horo_v4_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
     }
 
-    return new Response(translatedJson, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'X-Cache': 'MISS',
-        'X-Date': dateStr
-      }
-    });
+    return new Response(finalStr, { headers: { ...headers, 'X-Cache': 'MISS' } });
 
-  } catch (error) {
-    console.error('API Error:', error.message);
+  } catch (err) {
     return new Response(JSON.stringify({
-      error: 'Failed to process horoscope',
-      message: error.message,
-      type: error.name
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+      error: 'Backend Error',
+      message: err.message,
+      type: err.name
+    }), { status: 500, headers });
   }
 }

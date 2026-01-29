@@ -33,7 +33,7 @@ const resources = {
       rank: 'st/nd/rd/th',
       luckyItem: 'Lucky Item/Action',
       lang_ko: 'Korean',
-      lang_jp: 'Japanese',
+      lang_ja: 'Japanese',
       lang_en: 'English',
       loading: 'Loading horoscope...',
     }
@@ -45,6 +45,7 @@ i18n
   .init({
     resources,
     lng: 'ko',
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false
     }
