@@ -1,9 +1,16 @@
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
 
 export async function onRequest(context) {
   const { env } = context;
   const CACHE = env.CACHE;
   const API_KEY = env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    return new Response(JSON.stringify({ error: 'Config error', message: 'GEMINI_API_KEY is missing' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  }
 
   try {
     // 1. Fetch raw data from Asahi TV
@@ -14,9 +21,16 @@ export async function onRequest(context) {
       }
     });
 
+    if (!response.ok) {
+        throw new Error(`Asahi TV fetch failed: ${response.status}`);
+    }
+
     const jsonData = await response.json();
     const data = Array.isArray(jsonData) ? jsonData[0] : jsonData;
-    const dateStr = data.onair_date; // e.g. "20260130"
+    if (!data || !data.detail) {
+        throw new Error('Invalid data format from Asahi TV');
+    }
+    const dateStr = data.onair_date;
 
     // 2. Check KV Cache
     if (CACHE) {
@@ -33,7 +47,6 @@ export async function onRequest(context) {
     }
 
     // 3. Prepare data for Gemini
-    // We only need the relevant parts to keep the prompt small
     const rawHoroscopeText = data.detail.map(item => {
       return `Rank: ${item.ranking_no}\nZodiac: ${item.horoscope_st}\nText: ${item.horoscope_text}`;
     }).join('\n\n');
@@ -71,6 +84,15 @@ Return only valid JSON.
     });
 
     const geminiResult = await geminiResponse.json();
+    
+    if (geminiResult.error) {
+        throw new Error(`Gemini API Error: ${geminiResult.error.message || JSON.stringify(geminiResult.error)}`);
+    }
+
+    if (!geminiResult.candidates || !geminiResult.candidates[0] || !geminiResult.candidates[0].content) {
+        throw new Error(`Invalid Gemini response structure: ${JSON.stringify(geminiResult)}`);
+    }
+
     const translatedJson = geminiResult.candidates[0].content.parts[0].text;
 
     // 5. Save to KV Cache
@@ -89,7 +111,8 @@ Return only valid JSON.
   } catch (error) {
     return new Response(JSON.stringify({
       error: 'Failed to process horoscope',
-      message: error.message
+      message: error.message,
+      stack: error.stack
     }), {
       status: 500,
       headers: {
