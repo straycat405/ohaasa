@@ -9,7 +9,7 @@ const resources = {
       rank: '위',
       luckyItem: '행운의 아이템/액션',
       lang_ko: '한국어',
-      lang_jp: '日本語',
+      lang_ja: '日本語',
       lang_en: 'English',
       loading: '운세를 가져오는 중...',
     }
@@ -21,7 +21,7 @@ const resources = {
       rank: '位',
       luckyItem: 'ラッキーアイテム/アクション',
       lang_ko: '한국어',
-      lang_jp: '日本語',
+      lang_ja: '日本語',
       lang_en: 'English',
       loading: '占いを取得中...',
     }

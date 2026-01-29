@@ -20,7 +20,7 @@ export async function onRequest(context) {
 
     // 2. Check KV Cache
     if (CACHE) {
-      const cachedData = await CACHE.get(`horoscope_v2_${dateStr}`);
+      const cachedData = await CACHE.get(`horoscope_v3_${dateStr}`);
       if (cachedData) {
         return new Response(cachedData, {
           headers: {
@@ -52,10 +52,10 @@ Requirements:
 3. Each item in the "horoscope" array must have:
    - "rank": (number) The ranking.
    - "zodiac": (object) { "jp": "Japanese Name", "ko": "Korean Name", "en": "English Name" }
-   - "content": (object) { "ko": "Korean Translation of fortune", "en": "English Translation of fortune" }
-   - "lucky": (object) { "ko": "Korean Translation of lucky item/action", "en": "English Translation of lucky item/action" }
+   - "content": (object) { "jp": "Original Japanese fortune text", "ko": "Korean Translation of fortune", "en": "English Translation of fortune" }
+   - "lucky": (object) { "jp": "Original Japanese lucky item text", "ko": "Korean Translation of lucky item/action", "en": "English Translation of lucky item/action" }
 
-Note: The Japanese text often contains the lucky item/action at the end (e.g., "とんかつを食べる", "グレー의服を着る"). Please separate this into the "lucky" field.
+Note: The Japanese text often contains the lucky item/action at the end (e.g., "とんかつ를食べる", "グレー의服を着る"). Please separate this into the "lucky" field and provide the original Japanese text in the "jp" field for both content and lucky.
 
 Return only valid JSON.
 `;
@@ -75,7 +75,7 @@ Return only valid JSON.
 
     // 5. Save to KV Cache
     if (CACHE) {
-      await CACHE.put(`horoscope_v2_${dateStr}`, translatedJson, { expirationTtl: 86400 }); // 24 hours
+      await CACHE.put(`horoscope_v3_${dateStr}`, translatedJson, { expirationTtl: 86400 }); // 24 hours
     }
 
     return new Response(translatedJson, {

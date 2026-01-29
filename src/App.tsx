@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Star, Sparkles, Crown, Gift } from 'lucide-react';
+import { Star, Sparkles, Crown, Clover } from 'lucide-react';
 
 interface Horoscope {
   rank: number;
@@ -11,10 +11,12 @@ interface Horoscope {
     en: string;
   };
   content: {
+    jp: string;
     ko: string;
     en: string;
   };
   lucky: {
+    jp: string;
     ko: string;
     en: string;
   };
@@ -58,12 +60,14 @@ function App() {
   };
 
   const getContent = (item: Horoscope) => {
-    if (i18n.language === 'en') return item.content?.en || '';
+    if (i18n.language === 'en') return item.content?.en || item.content?.ko || '';
+    if (i18n.language === 'ja') return item.content?.jp || item.content?.ko || '';
     return item.content?.ko || '';
   };
 
   const getLucky = (item: Horoscope) => {
-    if (i18n.language === 'en') return item.lucky?.en || '';
+    if (i18n.language === 'en') return item.lucky?.en || item.lucky?.ko || '';
+    if (i18n.language === 'ja') return item.lucky?.jp || item.lucky?.ko || '';
     return item.lucky?.ko || '';
   };
 
@@ -76,26 +80,30 @@ function App() {
     }
   };
 
-  // Format date for display (e.g., 20260130 -> 1月30日 or 1/30)
+  // Format date for display (e.g., 20260130 -> 1/30 or 1月30日)
   const formatDisplayDate = (dateStr?: string) => {
     if (!dateStr) return '';
-    try {
-      const month = parseInt(dateStr.substring(4, 6));
-      const day = parseInt(dateStr.substring(6, 8));
-      return i18n.language === 'ja' ? `${month}月${day}日` : `${month}/${day}`;
-    } catch (e) {
-      return dateStr;
+    const dateStrClean = String(dateStr).replace(/[^0-9]/g, '');
+    if (dateStrClean.length === 8) {
+      try {
+        const month = parseInt(dateStrClean.substring(4, 6));
+        const day = parseInt(dateStrClean.substring(6, 8));
+        return i18n.language === 'ja' ? `${month}月${day}日` : `${month}/${day}`;
+      } catch (e) {
+        return dateStr;
+      }
     }
+    return dateStr;
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full mb-4 animate-pulse shadow-lg">
             <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <p className="text-lg font-medium text-purple-600 font-display">{t('loading')}</p>
+          <p className="text-lg font-medium text-emerald-600 font-display">{t('loading')}</p>
         </div>
       </div>
     );
@@ -112,7 +120,7 @@ function App() {
           <p className="text-slate-500 text-sm">현재 운세 정보를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-6 px-6 py-2 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transition-colors"
+            className="mt-6 px-6 py-2 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors"
           >
             새로고침
           </button>
@@ -122,28 +130,28 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen pb-12">
+    <div className="min-h-screen pb-12 bg-slate-50/50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-10">
+      <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 bg-clip-text text-transparent flex items-center justify-center sm:justify-start gap-2">
-                <Star className="w-6 h-6 text-purple-500 fill-purple-200" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 bg-clip-text text-transparent flex items-center justify-center sm:justify-start gap-2">
+                <Star className="w-6 h-6 text-emerald-500 fill-emerald-200" />
                 {t('title')}
               </h1>
               <p className="text-sm text-slate-500 mt-1">{formatDisplayDate(data?.date)} | {t('subtitle')}</p>
             </div>
 
-            <div className="flex bg-purple-50 p-1 rounded-full">
+            <div className="flex bg-emerald-50 p-1 rounded-full">
               {['ko', 'ja', 'en'].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => changeLanguage(lang)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
                     i18n.language === lang
-                      ? 'bg-white shadow-sm text-purple-600'
-                      : 'text-slate-500 hover:text-purple-600'
+                      ? 'bg-white shadow-sm text-emerald-600'
+                      : 'text-slate-500 hover:text-emerald-600'
                   }`}
                 >
                   {t(`lang_${lang}`)}
@@ -161,7 +169,7 @@ function App() {
             <div
               key={index}
               className={`horoscope-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all hover:shadow-md ${
-                item.rank === 1 ? 'ring-2 ring-purple-100 shadow-lg' : ''
+                item.rank === 1 ? 'ring-2 ring-emerald-100 shadow-lg scale-[1.01]' : ''
               }`}
             >
               <div className="p-5">
@@ -190,13 +198,15 @@ function App() {
                     </p>
 
                     {/* Lucky Item Section */}
-                    <div className="bg-rose-50/50 rounded-xl p-3 flex items-center gap-3 border border-rose-100/50">
-                      <div className="bg-rose-100 p-2 rounded-lg">
-                        <Gift className="w-4 h-4 text-rose-500" />
+                    <div className="bg-emerald-50/50 rounded-xl p-3 flex items-center gap-3 border border-emerald-100/50">
+                      <div className="bg-emerald-100 p-2 rounded-lg">
+                        <Clover className="w-4 h-4 text-emerald-500" />
                       </div>
                       <div className="text-sm">
-                        <span className="font-bold text-rose-600 mr-2">{i18n.language === 'en' ? 'Lucky Secret:' : '행운의 비법:'}</span>
-                        <span className="text-rose-500 font-medium">{getLucky(item)}</span>
+                        <span className="font-bold text-emerald-600 mr-2">
+                          {i18n.language === 'en' ? 'Lucky Secret:' : i18n.language === 'ja' ? 'ラッキー:' : '행운의 비법:'}
+                        </span>
+                        <span className="text-emerald-500 font-medium">{getLucky(item)}</span>
                       </div>
                     </div>
                   </div>
