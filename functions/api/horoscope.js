@@ -1,4 +1,4 @@
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 export async function onRequest(context) {
   const { env } = context;
@@ -25,9 +25,9 @@ export async function onRequest(context) {
     const dateStr = item?.onair_date;
     if (!dateStr || !item.detail) throw new Error('Source data format invalid');
 
-    // 2. Cache Check (v6)
+    // 2. Cache Check (v7)
     if (CACHE) {
-      const cached = await CACHE.get(`horo_v6_${dateStr}`);
+      const cached = await CACHE.get(`horo_v7_${dateStr}`);
       if (cached) {
         return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT' } });
       }
@@ -75,7 +75,7 @@ Return ONLY valid JSON.
 
     // 5. Cache Save
     if (CACHE) {
-      context.waitUntil(CACHE.put(`horo_v6_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
+      context.waitUntil(CACHE.put(`horo_v7_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
     }
 
     return new Response(finalStr, { headers: { ...headers, 'X-Cache': 'MISS' } });
