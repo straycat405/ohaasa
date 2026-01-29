@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Star, Sparkles } from 'lucide-react';
+import { Star, Sparkles, Crown } from 'lucide-react';
 
 interface Horoscope {
   rank: string;
@@ -48,95 +48,111 @@ function App() {
     return item.jpName;
   };
 
+  const getRankClass = (rank: string) => {
+    switch (rank) {
+      case '1': return 'rank-1';
+      case '2': return 'rank-2';
+      case '3': return 'rank-3';
+      default: return 'rank-default';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-xl font-medium animate-pulse flex items-center gap-2">
-            <Sparkles className="text-yellow-500" />
-            {t('loading')}
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mb-4 animate-pulse">
+            <Sparkles className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-lg font-medium text-purple-600">{t('loading')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-12">
+    <div className="min-h-screen pb-12">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-indigo-600 flex items-center gap-2">
-              <Star className="fill-indigo-600" />
-              {t('title')}
-            </h1>
-            <p className="text-sm text-slate-500">{data?.date} | {t('subtitle')}</p>
-          </div>
-          
-          <div className="flex bg-slate-100 p-1 rounded-lg">
-            {['ko', 'ja', 'en'].map((lang) => (
-              <button
-                key={lang}
-                onClick={() => changeLanguage(lang)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                  i18n.language === lang ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                {t(`lang_${lang}`)}
-              </button>
-            ))}
+      <header className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 bg-clip-text text-transparent flex items-center justify-center sm:justify-start gap-2">
+                <Star className="w-6 h-6 text-purple-500 fill-purple-200" />
+                {t('title')}
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">{data?.date} | {t('subtitle')}</p>
+            </div>
+
+            <div className="flex bg-purple-50 p-1 rounded-full">
+              {['ko', 'ja', 'en'].map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => changeLanguage(lang)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    i18n.language === lang
+                      ? 'bg-white shadow-sm text-purple-600'
+                      : 'text-slate-500 hover:text-purple-600'
+                  }`}
+                >
+                  {t(`lang_${lang}`)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        <div className="space-y-4">
           {data?.horoscope.map((item, index) => (
-            <div 
-              key={index} 
-              className={`bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow ${
-                item.rank === '1' ? 'ring-2 ring-yellow-400 border-transparent' : ''
+            <div
+              key={index}
+              className={`horoscope-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden ${
+                item.rank === '1' ? 'top-card shadow-lg' : ''
               }`}
             >
               <div className="p-5">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className={`text-2xl font-black ${
-                      item.rank === '1' ? 'text-yellow-500' : 'text-slate-400'
-                    }`}>
-                      {item.rank}
-                    </span>
-                    <h2 className="text-xl font-bold">{getSignName(item)}</h2>
+                <div className="flex items-start gap-4">
+                  {/* Rank Badge */}
+                  <div className={`rank-badge ${getRankClass(item.rank)}`}>
+                    {item.rank === '1' ? <Crown className="w-4 h-4" /> : item.rank}
                   </div>
-                  {item.rank === '1' && (
-                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
-                      Lucky No.1
-                    </span>
-                  )}
-                </div>
-                
-                <div className="space-y-3">
-                    <p className="text-slate-700 leading-relaxed whitespace-pre-line">
-                        {item.content}
-                    </p>
-                    
-                    <div className="pt-3 border-t border-slate-100">
-                        <div className="flex items-center gap-2 text-sm text-indigo-600 font-semibold">
-                            <Sparkles size={16} />
-                            {t('luckyItem')}
-                        </div>
-                        {/* Note: The scraped content usually includes the item at the end. 
-                            We display the full content for now as Japanese text is mixed. */}
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-lg font-bold text-slate-800">
+                        {getSignName(item)}
+                      </h2>
+                      {item.rank === '1' && (
+                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          <Sparkles className="w-3 h-3" />
+                          LUCKY
+                        </span>
+                      )}
                     </div>
+
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+                      {item.content}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </main>
-      
-      <footer className="text-center text-slate-400 text-sm mt-8">
-        &copy; 2026 {t('title')} - Data from Asahi TV
+
+      {/* Footer */}
+      <footer className="text-center py-8">
+        <p className="text-slate-400 text-sm">
+          {t('title')} &copy; 2026
+        </p>
+        <p className="text-slate-300 text-xs mt-1">
+          Data from Asahi TV
+        </p>
       </footer>
     </div>
   );
