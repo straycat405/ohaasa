@@ -24,7 +24,10 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/horoscope');
+        const apiUrl = import.meta.env.DEV
+          ? 'http://localhost:3001/api/horoscope'
+          : '/api/horoscope';
+        const response = await axios.get(apiUrl);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching horoscope:', error);
