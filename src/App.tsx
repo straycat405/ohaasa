@@ -40,8 +40,12 @@ function App() {
           : '/api/horoscope';
         const response = await axios.get(apiUrl);
         setData(response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching horoscope:', error);
+        if (error.response) {
+            console.error('Error Response Data:', error.response.data);
+            console.error('Error Response Status:', error.response.status);
+        }
       } finally {
         setLoading(false);
       }

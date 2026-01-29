@@ -93,26 +93,44 @@ Return only valid JSON.
         throw new Error(`Invalid Gemini response structure: ${JSON.stringify(geminiResult)}`);
     }
 
-    const translatedJson = geminiResult.candidates[0].content.parts[0].text;
+    const resultText = geminiResult.candidates[0].content.parts[0].text;
+    
+    // Clean potential markdown blocks
+    const cleanJson = resultText.replace(/```json\n?|```/g, '').trim();
+    
+    // Validate JSON before returning
+    let finalData;
+    try {
+        finalData = JSON.parse(cleanJson);
+    } catch (e) {
+        throw new Error(`Gemini returned invalid JSON: ${e.message}. Raw: ${cleanJson.substring(0, 100)}...`);
+    }
 
-    // 5. Save to KV Cache
+    const translatedJson = JSON.stringify(finalData);
+
+    // 5. Save to KV Cache (non-blocking)
     if (CACHE) {
-      await CACHE.put(`horoscope_v3_${dateStr}`, translatedJson, { expirationTtl: 86400 }); // 24 hours
+      context.waitUntil(
+        CACHE.put(`horoscope_v3_${dateStr}`, translatedJson, { expirationTtl: 86400 })
+          .catch(e => console.error('KV Cache Put Error:', e))
+      );
     }
 
     return new Response(translatedJson, {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'X-Cache': 'MISS'
+        'X-Cache': 'MISS',
+        'X-Date': dateStr
       }
     });
 
   } catch (error) {
+    console.error('API Error:', error.message);
     return new Response(JSON.stringify({
       error: 'Failed to process horoscope',
       message: error.message,
-      stack: error.stack
+      type: error.name
     }), {
       status: 500,
       headers: {
