@@ -7,7 +7,10 @@
       "Bash(npm run build:*)",
       "WebFetch(domain:www.asahi.co.jp)",
       "WebSearch",
-      "WebFetch(domain:ohaasa.pages.dev)"
+      "WebFetch(domain:ohaasa.pages.dev)",
+      "Bash(gh workflow:*)",
+      "WebFetch(domain:adsense-ko.googleblog.com)",
+      "Bash(npm install:*)"
     ]
   }
 }
