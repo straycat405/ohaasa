@@ -38,7 +38,7 @@ export default function PrivacyPage() {
       <SEO 
         title={t('privacy_title')}
         description={t('privacy_intro')}
-        canonical="https://ohayoasa.pages.dev/privacy"
+        canonical="https://ohaasa.site/privacy"
       />
 
       <div className="pb-12">

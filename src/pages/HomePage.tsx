@@ -154,7 +154,7 @@ export default function HomePage() {
       <SEO 
         title={data?.date ? `${t('title')} ${formatDisplayDate(data.date)}` : t('title')}
         description={t('subtitle')}
-        canonical="https://ohayoasa.pages.dev/"
+        canonical="https://ohaasa.site/"
       />
 
       <div className="pb-12">

@@ -43,7 +43,7 @@ export default function TermsPage() {
       <SEO 
         title={t('terms_title')}
         description={t('terms_intro')}
-        canonical="https://ohayoasa.pages.dev/terms"
+        canonical="https://ohaasa.site/terms"
       />
 
       <div className="pb-12">

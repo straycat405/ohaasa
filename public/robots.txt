@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ohayoasa.pages.dev/sitemap.xml
+Sitemap: https://ohaasa.site/sitemap.xml

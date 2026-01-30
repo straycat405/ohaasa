@@ -38,7 +38,7 @@ export default function AboutPage() {
       <SEO 
         title={t('about_title')}
         description={t('about_service_desc')}
-        canonical="https://ohayoasa.pages.dev/about"
+        canonical="https://ohaasa.site/about"
       />
 
       <div className="pb-12">

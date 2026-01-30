@@ -13,8 +13,8 @@ interface SEOProps {
 export default function SEO({ 
   title, 
   description, 
-  canonical = 'https://ohayoasa.pages.dev/', 
-  image = 'https://ohayoasa.pages.dev/og-image.png',
+  canonical = 'https://ohaasa.site/', 
+  image = 'https://ohaasa.site/og-image.png',
   type = 'website',
   keywords
 }: SEOProps) {
@@ -38,7 +38,7 @@ export default function SEO({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
-    "url": "https://ohayoasa.pages.dev/",
+    "url": "https://ohaasa.site/",
     "description": "Daily horoscope rankings from Asahi TV's Ohayo Asahi program.",
     "inLanguage": currentLang
   };
