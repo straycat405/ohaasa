@@ -83,6 +83,26 @@ export default function HomePage() {
   const getContent = (item: Horoscope) => item.content?.[getLangKey()] || '';
   const getLucky = (item: Horoscope) => item.lucky?.[getLangKey()] || '';
 
+  const zodiacDateRanges: Record<string, string> = {
+    '염소자리': '12/22 ~ 1/19',
+    '물병자리': '1/20 ~ 2/18',
+    '물고기자리': '2/19 ~ 3/20',
+    '양자리': '3/21 ~ 4/19',
+    '황소자리': '4/20 ~ 5/20',
+    '쌍둥이자리': '5/21 ~ 6/21',
+    '게자리': '6/22 ~ 7/22',
+    '사자자리': '7/23 ~ 8/22',
+    '처녀자리': '8/23 ~ 9/23',
+    '천칭자리': '9/24 ~ 10/22',
+    '전갈자리': '10/23 ~ 11/22',
+    '사수자리': '11/23 ~ 12/21',
+  };
+
+  const getDateRange = (item: Horoscope) => {
+    const koName = item.zodiac?.ko || '';
+    return zodiacDateRanges[koName] || '';
+  };
+
   const formatDisplayDate = (dateStr?: string) => {
     if (!dateStr) return '';
     const clean = String(dateStr).replace(/[^0-9]/g, '');
@@ -188,9 +208,14 @@ export default function HomePage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-                          {getSignName(item)}
-                        </h2>
+                        <div>
+                          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+                            {getSignName(item)}
+                          </h2>
+                          <span className="text-xs text-slate-400 font-medium">
+                            {getDateRange(item)}
+                          </span>
+                        </div>
                         {item.rank === 1 && (
                           <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg shadow-amber-200 animate-bounce">
                             <Sparkles className="w-3 h-3" />
