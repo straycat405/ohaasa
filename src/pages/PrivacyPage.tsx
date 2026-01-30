@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Shield, Database, Cookie, Share2, Mail, ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function PrivacyPage() {
   const { t, i18n } = useTranslation();
@@ -35,10 +35,11 @@ export default function PrivacyPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('privacy_title')} - Ohayo Asahi</title>
-        <meta name="description" content={t('privacy_intro')} />
-      </Helmet>
+      <SEO 
+        title={t('privacy_title')}
+        description={t('privacy_intro')}
+        canonical="https://ohayoasa.pages.dev/privacy"
+      />
 
       <div className="pb-12">
         <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">

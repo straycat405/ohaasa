@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { FileText, Play, Heart, Copyright, AlertTriangle, RefreshCw, ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function TermsPage() {
   const { t, i18n } = useTranslation();
@@ -40,10 +40,11 @@ export default function TermsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('terms_title')} - Ohayo Asahi</title>
-        <meta name="description" content={t('terms_intro')} />
-      </Helmet>
+      <SEO 
+        title={t('terms_title')}
+        description={t('terms_intro')}
+        canonical="https://ohayoasa.pages.dev/terms"
+      />
 
       <div className="pb-12">
         <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">

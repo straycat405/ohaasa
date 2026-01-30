@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Star, Database, Globe, AlertCircle, ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function AboutPage() {
   const { t, i18n } = useTranslation();
@@ -35,10 +35,11 @@ export default function AboutPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('about_title')} - Ohayo Asahi</title>
-        <meta name="description" content={t('about_service_desc')} />
-      </Helmet>
+      <SEO 
+        title={t('about_title')}
+        description={t('about_service_desc')}
+        canonical="https://ohayoasa.pages.dev/about"
+      />
 
       <div className="pb-12">
         <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">

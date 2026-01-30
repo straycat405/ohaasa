@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { Star, Sparkles, Crown, Clover } from 'lucide-react';
+import SEO from '../components/SEO';
 
 interface LanguageContent {
   jp: string;
@@ -151,10 +151,11 @@ export default function HomePage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('title')} - Ohayo Asahi</title>
-        <meta name="description" content={t('subtitle')} />
-      </Helmet>
+      <SEO 
+        title={data?.date ? `${t('title')} ${formatDisplayDate(data.date)}` : t('title')}
+        description={t('subtitle')}
+        canonical="https://ohayoasa.pages.dev/"
+      />
 
       <div className="pb-12">
         <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">
