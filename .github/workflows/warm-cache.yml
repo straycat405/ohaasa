@@ -2,8 +2,8 @@ name: Warm Horoscope Cache
 
 on:
   schedule:
-    # 매일 07:05 JST/KST = 22:05 UTC (전날)
-    - cron: '5 22 * * *'
+    # 월~토 07:05 JST/KST = 22:05 UTC (전날), 일요일 제외
+    - cron: '5 22 * * 1-6'
   workflow_dispatch: # 수동 실행 가능
 
 jobs:
