@@ -1,0 +1,32 @@
+name: Warm Horoscope Cache
+
+on:
+  schedule:
+    # 매일 07:05 JST/KST = 22:05 UTC (전날)
+    - cron: '5 22 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  warm-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call API to warm cache
+        run: |
+          echo "Warming cache at $(date -u)"
+
+          # Primary domain
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://ohaasa.site/api/horoscope")
+          echo "ohaasa.site response: $response"
+
+          if [ "$response" != "200" ]; then
+            echo "Primary failed, trying fallback..."
+            response=$(curl -s -o /dev/null -w "%{http_code}" "https://ohaasa.pages.dev/api/horoscope")
+            echo "ohaasa.pages.dev response: $response"
+          fi
+
+          if [ "$response" = "200" ]; then
+            echo "Cache warmed successfully!"
+          else
+            echo "Failed to warm cache"
+            exit 1
+          fi
