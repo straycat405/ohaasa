@@ -107,7 +107,13 @@ Return ONLY valid JSON.
     if (!rawText) throw new Error('Gemini returned no text content');
 
     // Clean and Validate (Robust regex-based cleaning)
-    const cleanJson = rawText.replace(/```json\n?|```/g, '').trim();
+    const cleanJson = rawText
+      .replace(/```json\n?|```/g, '')
+      .replace(/[\x00-\x1F\x7F]/g, (char) => {
+        const escapes = {'\n': '\\n', '\r': '\\r', '\t': '\\t'};
+        return escapes[char] || '';
+      })
+      .trim();
     const finalObj = JSON.parse(cleanJson);
 
     // zodiac 매핑 적용
