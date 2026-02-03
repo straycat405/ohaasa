@@ -1,4 +1,4 @@
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // 별자리 코드 → 3개 언어 매핑 (상수)
 const ZODIAC_MAP = {
@@ -38,7 +38,7 @@ function applyZodiacMapping(horoscopeData, rawDetail) {
 export async function onRequest(context) {
   const { env } = context;
   const CACHE = env.CACHE;
-  const API_KEY = env.ANTHROPIC_API_KEY;
+  const API_KEY = env.GROQ_API_KEY;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -91,26 +91,25 @@ ${content}
 Return ONLY valid JSON.
 `;
 
-    // 4. Claude API Request
-    const claudeRes = await fetch(CLAUDE_API_URL, {
+    // 4. Groq API Request (OpenAI-compatible)
+    const groqRes = await fetch(GROQ_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 4096,
         messages: [{ role: 'user', content: prompt }]
       })
     });
 
-    const claudeJson = await claudeRes.json();
-    if (claudeJson.error) throw new Error(`Claude: ${claudeJson.error.message}`);
+    const groqJson = await groqRes.json();
+    if (groqJson.error) throw new Error(`Groq: ${groqJson.error.message}`);
 
-    const rawText = claudeJson.content?.[0]?.text;
-    if (!rawText) throw new Error('Claude returned no text content');
+    const rawText = groqJson.choices?.[0]?.message?.content;
+    if (!rawText) throw new Error('Groq returned no text content');
 
     // Clean and Validate (Robust regex-based cleaning)
     const stripped = rawText.replace(/```json\n?|```/g, '').trim();
