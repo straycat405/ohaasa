@@ -10,7 +10,8 @@
       "WebFetch(domain:ohaasa.pages.dev)",
       "Bash(gh workflow:*)",
       "WebFetch(domain:adsense-ko.googleblog.com)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(curl:*)"
     ]
   }
 }

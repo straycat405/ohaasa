@@ -14,7 +14,7 @@ const resources = {
       loading: '운세를 가져오는 중...',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
-      footer_powered: 'Powered by Gemini AI | Data from Asahi TV',
+      footer_powered: 'Powered by DeepL | Data from Asahi TV',
       nav_home: '홈',
       nav_about: '소개',
       nav_privacy: '개인정보처리방침',
@@ -26,7 +26,7 @@ const resources = {
       about_source_title: '데이터 출처',
       about_source_desc: '모든 운세 데이터는 아사히 TV "오하요 아사히(おはよう朝日です)" 프로그램에서 제공됩니다. 본 서비스는 교육 및 오락 목적으로 해당 콘텐츠를 번역하여 제공합니다.',
       about_translation_title: '번역 안내',
-      about_translation_desc: '일본어 원문은 Google Gemini AI를 통해 한국어와 영어로 번역됩니다. AI 번역의 특성상 약간의 오차가 있을 수 있습니다.',
+      about_translation_desc: '일본어 원문은 DeepL을 통해 한국어와 영어로 번역됩니다. AI 번역의 특성상 약간의 오차가 있을 수 있습니다.',
       about_disclaimer_title: '면책 조항',
       about_disclaimer_desc: '본 서비스는 순수하게 오락 목적으로 제공됩니다. 운세 내용은 재미를 위한 것이며, 중요한 결정을 내리는 데 사용해서는 안 됩니다.',
       // Privacy Page
@@ -37,7 +37,7 @@ const resources = {
       privacy_cookies_title: '쿠키 및 광고',
       privacy_cookies_desc: '본 서비스는 Google AdSense를 사용하여 광고를 표시합니다. Google은 광고 개인화를 위해 쿠키를 사용할 수 있습니다. Google의 개인정보처리방침은 https://policies.google.com/privacy 에서 확인할 수 있습니다.',
       privacy_third_title: '제3자 서비스',
-      privacy_third_desc: '본 서비스는 다음의 제3자 서비스를 사용합니다: Google AdSense (광고), Google Gemini AI (번역), Cloudflare Pages (호스팅).',
+      privacy_third_desc: '본 서비스는 다음의 제3자 서비스를 사용합니다: Google AdSense (광고), DeepL (번역), Cloudflare Pages (호스팅).',
       privacy_contact_title: '문의',
       privacy_contact_desc: '개인정보 관련 문의사항이 있으시면 GitHub 이슈를 통해 연락해 주세요.',
       // Terms Page
@@ -67,7 +67,7 @@ const resources = {
       loading: '占いを取得中...',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
-      footer_powered: 'Powered by Gemini AI | Data from Asahi TV',
+      footer_powered: 'Powered by DeepL | Data from Asahi TV',
       nav_home: 'ホーム',
       nav_about: 'について',
       nav_privacy: 'プライバシーポリシー',
@@ -79,7 +79,7 @@ const resources = {
       about_source_title: 'データソース',
       about_source_desc: 'すべての占いデータは朝日放送「おはよう朝日です」番組から提供されています。本サービスは教育およびエンターテインメント目的でコンテンツを翻訳して提供しています。',
       about_translation_title: '翻訳について',
-      about_translation_desc: '日本語の原文はGoogle Gemini AIを使用して韓国語と英語に翻訳されます。AI翻訳の特性上、多少の誤差がある場合があります。',
+      about_translation_desc: '日本語の原文はDeepLを使用して韓国語と英語に翻訳されます。AI翻訳の特性上、多少の誤差がある場合があります。',
       about_disclaimer_title: '免責事項',
       about_disclaimer_desc: '本サービスは純粋にエンターテインメント目的で提供されています。占いの内容は楽しみのためのものであり、重要な決定を下す際に使用すべきではありません。',
       // Privacy Page
@@ -90,7 +90,7 @@ const resources = {
       privacy_cookies_title: 'Cookieと広告',
       privacy_cookies_desc: '本サービスはGoogle AdSenseを使用して広告を表示します。Googleは広告のパーソナライズのためにCookieを使用する場合があります。Googleのプライバシーポリシーは https://policies.google.com/privacy でご確認いただけます。',
       privacy_third_title: 'サードパーティサービス',
-      privacy_third_desc: '本サービスは以下のサードパーティサービスを使用しています：Google AdSense（広告）、Google Gemini AI（翻訳）、Cloudflare Pages（ホスティング）。',
+      privacy_third_desc: '本サービスは以下のサードパーティサービスを使用しています：Google AdSense（広告）、DeepL（翻訳）、Cloudflare Pages（ホスティング）。',
       privacy_contact_title: 'お問い合わせ',
       privacy_contact_desc: 'プライバシーに関するお問い合わせは、GitHubイシューを通じてご連絡ください。',
       // Terms Page
@@ -120,7 +120,7 @@ const resources = {
       loading: 'Loading horoscope...',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
-      footer_powered: 'Powered by Gemini AI | Data from Asahi TV',
+      footer_powered: 'Powered by DeepL | Data from Asahi TV',
       nav_home: 'Home',
       nav_about: 'About',
       nav_privacy: 'Privacy Policy',
@@ -132,7 +132,7 @@ const resources = {
       about_source_title: 'Data Source',
       about_source_desc: 'All horoscope data is sourced from Asahi TV\'s "Ohayo Asahi (おはよう朝日です)" program. This service translates the content for educational and entertainment purposes.',
       about_translation_title: 'Translation',
-      about_translation_desc: 'Japanese original text is translated into Korean and English using Google Gemini AI. Due to the nature of AI translation, there may be minor inaccuracies.',
+      about_translation_desc: 'Japanese original text is translated into Korean and English using DeepL. Due to the nature of AI translation, there may be minor inaccuracies.',
       about_disclaimer_title: 'Disclaimer',
       about_disclaimer_desc: 'This service is provided purely for entertainment purposes. Horoscope content is meant for fun and should not be used for making important decisions.',
       // Privacy Page
@@ -143,7 +143,7 @@ const resources = {
       privacy_cookies_title: 'Cookies and Advertising',
       privacy_cookies_desc: 'This Service uses Google AdSense to display advertisements. Google may use cookies for ad personalization. Google\'s Privacy Policy can be found at https://policies.google.com/privacy.',
       privacy_third_title: 'Third-Party Services',
-      privacy_third_desc: 'This Service uses the following third-party services: Google AdSense (advertising), Google Gemini AI (translation), Cloudflare Pages (hosting).',
+      privacy_third_desc: 'This Service uses the following third-party services: Google AdSense (advertising), DeepL (translation), Cloudflare Pages (hosting).',
       privacy_contact_title: 'Contact',
       privacy_contact_desc: 'For privacy-related inquiries, please contact us through GitHub Issues.',
       // Terms Page
