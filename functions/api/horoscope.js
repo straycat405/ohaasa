@@ -1,4 +1,4 @@
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const DEEPL_API_URL = 'https://api-free.deepl.com/v2/translate';
 
 // 별자리 코드 → 3개 언어 매핑 (상수)
 const ZODIAC_MAP = {
@@ -16,29 +16,44 @@ const ZODIAC_MAP = {
   '12': { jp: 'うお座', ko: '물고기자리', en: 'Pisces' },
 };
 
-// rank → horoscope_st 매핑으로 zodiac 덮어쓰기
-function applyZodiacMapping(horoscopeData, rawDetail) {
-  // rank → horoscope_st 매핑 생성
-  const rankToCode = {};
-  rawDetail.forEach(d => {
-    rankToCode[parseInt(d.ranking_no, 10)] = d.horoscope_st;
+// 일본어 텍스트에서 content와 lucky 분리
+function parseHoroscopeText(text) {
+  // 탭으로 분리, 빈 문자열 제거
+  const parts = text.split('\t').filter(p => p.trim());
+  if (parts.length === 0) return { content: '', lucky: '' };
+
+  // 마지막이 lucky, 나머지가 content
+  const lucky = parts[parts.length - 1];
+  const content = parts.slice(0, -1).join(' ');
+
+  return { content, lucky };
+}
+
+// DeepL API로 번역
+async function translateWithDeepL(texts, targetLang, apiKey) {
+  const response = await fetch(DEEPL_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `DeepL-Auth-Key ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: texts,
+      source_lang: 'JA',
+      target_lang: targetLang,
+    }),
   });
 
-  // zodiac 덮어쓰기
-  horoscopeData.horoscope.forEach(h => {
-    const code = rankToCode[h.rank];
-    if (code && ZODIAC_MAP[code]) {
-      h.zodiac = ZODIAC_MAP[code];
-    }
-  });
+  const data = await response.json();
+  if (data.error) throw new Error(`DeepL: ${data.error.message || data.message}`);
 
-  return horoscopeData;
+  return data.translations.map(t => t.text);
 }
 
 export async function onRequest(context) {
   const { env } = context;
   const CACHE = env.CACHE;
-  const API_KEY = env.GROQ_API_KEY;
+  const API_KEY = env.DEEPL_API_KEY;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -60,82 +75,56 @@ export async function onRequest(context) {
     const dateStr = item?.onair_date;
     if (!dateStr || !item.detail) throw new Error('Source data format invalid');
 
-    // 2. Cache Check (v7)
+    // 2. Cache Check
     if (CACHE) {
-      const cached = await CACHE.get(`horo_v7_${dateStr}`);
+      const cached = await CACHE.get(`horo_deepl_${dateStr}`);
       if (cached) {
-        // 캐시된 데이터에 zodiac 매핑 적용
-        const cachedObj = JSON.parse(cached);
-        const corrected = applyZodiacMapping(cachedObj, item.detail);
-        return new Response(JSON.stringify(corrected), { headers: { ...headers, 'X-Cache': 'HIT' } });
+        return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT' } });
       }
     }
 
-    // 3. Build Prompt
-    const content = item.detail.map(d => `Rank: ${d.ranking_no}, Sign: ${d.horoscope_st}, Text: ${d.horoscope_text}`).join('\n');
-    const prompt = `
-Return horoscope data for ${dateStr} as JSON.
-Provide translations in Korean, English, AND keep the original Japanese.
+    // 3. Parse and prepare texts for translation
+    const parsed = item.detail
+      .sort((a, b) => parseInt(a.ranking_no) - parseInt(b.ranking_no))
+      .map(d => ({
+        rank: parseInt(d.ranking_no, 10),
+        zodiac: ZODIAC_MAP[d.horoscope_st] || { jp: '', ko: '', en: '' },
+        ...parseHoroscopeText(d.horoscope_text),
+      }));
 
-Requirements:
-- zodiac: { jp, ko, en }
-- content: { jp, ko, en }
-- lucky: { jp, ko, en } (Extract lucky item/action from the end of the text)
+    const contents = parsed.map(p => p.content);
+    const luckies = parsed.map(p => p.lucky);
 
-Format:
-{"date": "${dateStr}", "horoscope": [{"rank": 1, "zodiac": {...}, "content": {...}, "lucky": {...}}, ...]}
+    // 4. Translate with DeepL (parallel requests for KO and EN)
+    const [contentsKo, contentsEn, luckiesKo, luckiesEn] = await Promise.all([
+      translateWithDeepL(contents, 'KO', API_KEY),
+      translateWithDeepL(contents, 'EN', API_KEY),
+      translateWithDeepL(luckies, 'KO', API_KEY),
+      translateWithDeepL(luckies, 'EN', API_KEY),
+    ]);
 
-Source:
-${content}
-
-Return ONLY valid JSON.
-`;
-
-    // 4. Groq API Request (OpenAI-compatible)
-    const groqRes = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
+    // 5. Build final result
+    const horoscope = parsed.map((p, i) => ({
+      rank: p.rank,
+      zodiac: p.zodiac,
+      content: {
+        jp: p.content,
+        ko: contentsKo[i],
+        en: contentsEn[i],
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        max_tokens: 4096,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+      lucky: {
+        jp: p.lucky,
+        ko: luckiesKo[i],
+        en: luckiesEn[i],
+      },
+    }));
 
-    const groqJson = await groqRes.json();
-    if (groqJson.error) throw new Error(`Groq: ${groqJson.error.message}`);
+    const finalObj = { date: dateStr, horoscope };
+    const finalStr = JSON.stringify(finalObj);
 
-    const rawText = groqJson.choices?.[0]?.message?.content;
-    if (!rawText) throw new Error('Groq returned no text content');
-
-    // Clean and Validate (Robust regex-based cleaning)
-    const stripped = rawText.replace(/```json\n?|```/g, '').trim();
-
-    let finalObj;
-    try {
-      finalObj = JSON.parse(stripped);
-    } catch (e) {
-      // JSON 문자열 리터럴 내부의 제어 문자만 이스케이프 후 재시도
-      const fixedJson = stripped.replace(/"((?:[^"\\]|\\.)*)"/g, (match, content) => {
-        const escaped = content
-          .replace(/\n/g, '\\n')
-          .replace(/\r/g, '\\r')
-          .replace(/\t/g, '\\t');
-        return `"${escaped}"`;
-      });
-      finalObj = JSON.parse(fixedJson);
-    }
-
-    // zodiac 매핑 적용
-    const correctedObj = applyZodiacMapping(finalObj, item.detail);
-    const finalStr = JSON.stringify(correctedObj);
-
-    // 5. Cache Save
+    // 6. Cache Save
     if (CACHE) {
-      context.waitUntil(CACHE.put(`horo_v7_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
+      context.waitUntil(CACHE.put(`horo_deepl_${dateStr}`, finalStr, { expirationTtl: 86400 }).catch(() => {}));
     }
 
     return new Response(finalStr, { headers: { ...headers, 'X-Cache': 'MISS' } });
