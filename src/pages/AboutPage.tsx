@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Star, Database, Globe, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Star, Database, Globe, AlertCircle, ArrowLeft, ExternalLink } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function AboutPage() {
@@ -20,6 +20,10 @@ export default function AboutPage() {
       icon: Database,
       title: t('about_source_title'),
       content: t('about_source_desc'),
+      link: {
+        url: 'https://www.asahi.co.jp/ohaasa/week/horoscope/',
+        text: t('about_source_link'),
+      },
     },
     {
       icon: Globe,
@@ -95,6 +99,17 @@ export default function AboutPage() {
                     <p className="text-slate-600 leading-relaxed">
                       {section.content}
                     </p>
+                    {section.link && (
+                      <a
+                        href={section.link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-3 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                      >
+                        {section.link.text}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
