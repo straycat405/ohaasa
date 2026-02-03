@@ -20,6 +20,7 @@ export default function AboutPage() {
       icon: Database,
       title: t('about_source_title'),
       content: t('about_source_desc'),
+      note: t('about_source_note'),
       link: {
         url: 'https://www.asahi.co.jp/ohaasa/week/horoscope/',
         text: t('about_source_link'),
@@ -99,6 +100,11 @@ export default function AboutPage() {
                     <p className="text-slate-600 leading-relaxed">
                       {section.content}
                     </p>
+                    {section.note && (
+                      <p className="text-sm text-amber-600 mt-2">
+                        {section.note}
+                      </p>
+                    )}
                     {section.link && (
                       <a
                         href={section.link.url}
