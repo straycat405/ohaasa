@@ -1,4 +1,4 @@
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
 // 별자리 코드 → 3개 언어 매핑 (상수)
 const ZODIAC_MAP = {
@@ -38,7 +38,7 @@ function applyZodiacMapping(horoscopeData, rawDetail) {
 export async function onRequest(context) {
   const { env } = context;
   const CACHE = env.CACHE;
-  const API_KEY = env.GEMINI_API_KEY;
+  const API_KEY = env.ANTHROPIC_API_KEY;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export async function onRequest(context) {
       }
     }
 
-    // 3. Gemini Prompt
+    // 3. Build Prompt
     const content = item.detail.map(d => `Rank: ${d.ranking_no}, Sign: ${d.horoscope_st}, Text: ${d.horoscope_text}`).join('\n');
     const prompt = `
 Return horoscope data for ${dateStr} as JSON.
@@ -91,20 +91,26 @@ ${content}
 Return ONLY valid JSON.
 `;
 
-    // 4. Gemini Request (Simplified body for maximum compatibility)
-    const geminiRes = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+    // 4. Claude API Request
+    const claudeRes = await fetch(CLAUDE_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: prompt }]
       })
     });
 
-    const geminiJson = await geminiRes.json();
-    if (geminiJson.error) throw new Error(`Gemini: ${geminiJson.error.message}`);
+    const claudeJson = await claudeRes.json();
+    if (claudeJson.error) throw new Error(`Claude: ${claudeJson.error.message}`);
 
-    const rawText = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) throw new Error('Gemini returned no text content');
+    const rawText = claudeJson.content?.[0]?.text;
+    if (!rawText) throw new Error('Claude returned no text content');
 
     // Clean and Validate (Robust regex-based cleaning)
     const stripped = rawText.replace(/```json\n?|```/g, '').trim();
