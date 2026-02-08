@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Star, Database, Globe, AlertCircle, ArrowLeft, ExternalLink, Moon, Sun, Mail } from 'lucide-react';
+import { Star, Database, Globe, AlertCircle, ArrowLeft, ExternalLink, Moon, Sun } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTheme } from '../context/ThemeContext';
 
@@ -40,11 +40,6 @@ export default function AboutPage() {
       icon: AlertCircle,
       title: t('about_disclaimer_title'),
       content: t('about_disclaimer_desc'),
-    },
-    {
-      icon: Mail,
-      title: t('about_contact_title'),
-      content: t('about_contact_desc'),
     },
   ];
 
