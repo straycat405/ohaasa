@@ -165,3 +165,104 @@ body {
 .star-twinkle {
   animation: twinkle 2s ease-in-out infinite;
 }
+
+/* 배경 별 애니메이션 */
+@keyframes twinkle-stars {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes twinkle-stars-alt {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes twinkle-stars-slow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.2; }
+}
+
+.stars-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.stars-background::before,
+.stars-background::after,
+.stars-background .stars-layer {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat;
+}
+
+/* 작은 별들 */
+.stars-background::before {
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, var(--star-color, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1px 1px at 40px 70px, var(--star-color, rgba(255,255,255,0.6)), transparent),
+    radial-gradient(1px 1px at 50px 160px, var(--star-color, rgba(255,255,255,0.7)), transparent),
+    radial-gradient(1px 1px at 90px 40px, var(--star-color, rgba(255,255,255,0.5)), transparent),
+    radial-gradient(1px 1px at 130px 80px, var(--star-color, rgba(255,255,255,0.6)), transparent),
+    radial-gradient(1px 1px at 160px 120px, var(--star-color, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1px 1px at 200px 50px, var(--star-color, rgba(255,255,255,0.5)), transparent),
+    radial-gradient(1px 1px at 220px 150px, var(--star-color, rgba(255,255,255,0.7)), transparent),
+    radial-gradient(1px 1px at 270px 90px, var(--star-color, rgba(255,255,255,0.6)), transparent),
+    radial-gradient(1px 1px at 300px 180px, var(--star-color, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1px 1px at 350px 20px, var(--star-color, rgba(255,255,255,0.5)), transparent),
+    radial-gradient(1px 1px at 380px 130px, var(--star-color, rgba(255,255,255,0.7)), transparent),
+    radial-gradient(1px 1px at 420px 60px, var(--star-color, rgba(255,255,255,0.6)), transparent),
+    radial-gradient(1px 1px at 450px 170px, var(--star-color, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1px 1px at 480px 100px, var(--star-color, rgba(255,255,255,0.5)), transparent);
+  background-size: 500px 200px;
+  animation: twinkle-stars 4s ease-in-out infinite;
+}
+
+/* 중간 별들 */
+.stars-background::after {
+  background-image:
+    radial-gradient(1.5px 1.5px at 100px 50px, var(--star-color-bright, rgba(255,255,255,0.9)), transparent),
+    radial-gradient(1.5px 1.5px at 200px 150px, var(--star-color-bright, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1.5px 1.5px at 300px 80px, var(--star-color-bright, rgba(255,255,255,0.9)), transparent),
+    radial-gradient(1.5px 1.5px at 400px 180px, var(--star-color-bright, rgba(255,255,255,0.7)), transparent),
+    radial-gradient(1.5px 1.5px at 150px 120px, var(--star-color-bright, rgba(255,255,255,0.8)), transparent),
+    radial-gradient(1.5px 1.5px at 350px 40px, var(--star-color-bright, rgba(255,255,255,0.9)), transparent),
+    radial-gradient(1.5px 1.5px at 450px 100px, var(--star-color-bright, rgba(255,255,255,0.7)), transparent),
+    radial-gradient(1.5px 1.5px at 50px 190px, var(--star-color-bright, rgba(255,255,255,0.8)), transparent);
+  background-size: 500px 220px;
+  animation: twinkle-stars-alt 5s ease-in-out infinite;
+}
+
+/* 큰 별들 (golden) */
+.stars-layer {
+  background-image:
+    radial-gradient(2px 2px at 80px 80px, var(--star-gold, rgba(251,191,36,0.9)), transparent),
+    radial-gradient(2px 2px at 250px 120px, var(--star-gold, rgba(251,191,36,0.8)), transparent),
+    radial-gradient(2px 2px at 420px 60px, var(--star-gold, rgba(251,191,36,0.9)), transparent),
+    radial-gradient(2px 2px at 180px 200px, var(--star-gold, rgba(251,191,36,0.7)), transparent),
+    radial-gradient(2px 2px at 380px 180px, var(--star-gold, rgba(251,191,36,0.8)), transparent);
+  background-size: 500px 250px;
+  animation: twinkle-stars-slow 6s ease-in-out infinite;
+}
+
+/* 다크 모드에서만 별 보이기 */
+:root {
+  --star-color: transparent;
+  --star-color-bright: transparent;
+  --star-gold: transparent;
+}
+
+[data-theme="dark"] {
+  --star-color: rgba(255, 255, 255, 0.6);
+  --star-color-bright: rgba(255, 255, 255, 0.8);
+  --star-gold: rgba(251, 191, 36, 0.8);
+}
