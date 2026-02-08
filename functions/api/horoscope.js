@@ -282,10 +282,10 @@ export async function onRequest(context) {
     const finalObj = { date: dateStr, horoscope };
     const finalStr = JSON.stringify(finalObj);
 
-    // Cache Save
+    // Cache Save (7 days TTL for historical data access)
     if (CACHE) {
       const cacheKey = isWeekend ? `horo_weekend_v2_${dateStr}` : `horo_deepl_${dateStr}`;
-      context.waitUntil(CACHE.put(cacheKey, finalStr, { expirationTtl: 86400 }).catch(() => {}));
+      context.waitUntil(CACHE.put(cacheKey, finalStr, { expirationTtl: 604800 }).catch(() => {}));
     }
 
     return new Response(finalStr, {
