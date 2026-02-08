@@ -8,6 +8,52 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Light Theme (밝은 밤하늘) */
+  --bg-primary: #f0f4ff;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-accent: #eef2ff;
+  --bg-lucky: #fef9e7;
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-accent: #4338ca;
+
+  --border-color: #e0e7ff;
+  --border-accent: #a5b4fc;
+
+  --accent-primary: #6366f1;
+  --accent-secondary: #f59e0b;
+  --accent-gold: #fbbf24;
+
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --gradient-bg: linear-gradient(135deg, #e0e7ff 0%, #faf5ff 50%, #fef3c7 100%);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme (밤하늘) */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e2952;
+  --bg-accent: #312e81;
+  --bg-lucky: #1e3a5f;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --text-accent: #a5b4fc;
+
+  --border-color: #334155;
+  --border-accent: #6366f1;
+
+  --accent-primary: #818cf8;
+  --accent-secondary: #fbbf24;
+  --accent-gold: #fcd34d;
+
+  --header-bg: rgba(15, 23, 42, 0.9);
+  --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e3a5f 100%);
 }
 
 * {
@@ -18,7 +64,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 50%, #f0f9ff 100%);
+  background: var(--gradient-bg);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -41,7 +89,7 @@ body {
 .rank-1 {
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 2px 12px rgba(251, 191, 36, 0.5);
 }
 
 .rank-2 {
@@ -57,8 +105,13 @@ body {
 }
 
 .rank-default {
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-  color: #7c3aed;
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  color: #c7d2fe;
+}
+
+[data-theme="light"] .rank-default {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
 }
 
 /* 카드 호버 효과 */
@@ -72,8 +125,12 @@ body {
 
 /* 1위 카드 특별 스타일 */
 .top-card {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 2px solid #fbbf24;
+  background: linear-gradient(135deg, #312e81 0%, #1e3a5f 100%);
+  border: 2px solid var(--accent-gold);
+}
+
+[data-theme="light"] .top-card {
+  background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
 }
 
 /* 스크롤바 스타일 */
@@ -82,14 +139,29 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-color);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-muted);
+}
+
+/* 테마 전환 애니메이션 */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 별 반짝임 애니메이션 */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.star-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
 }

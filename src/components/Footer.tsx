@@ -6,40 +6,50 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-slate-100 mt-10 bg-white/50">
+    <footer
+      className="mt-10 theme-transition"
+      style={{
+        borderTop: '1px solid var(--border-color)',
+        background: 'var(--header-bg)'
+      }}
+    >
       <div className="max-w-3xl mx-auto px-4 py-8">
         <nav className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-6">
           <Link
             to="/"
-            className="text-slate-500 hover:text-emerald-600 text-sm font-medium transition-colors"
+            className="text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             {t('nav_home')}
           </Link>
           <Link
             to="/about"
-            className="text-slate-500 hover:text-emerald-600 text-sm font-medium transition-colors"
+            className="text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             {t('nav_about')}
           </Link>
           <Link
             to="/privacy"
-            className="text-slate-500 hover:text-emerald-600 text-sm font-medium transition-colors"
+            className="text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             {t('nav_privacy')}
           </Link>
           <Link
             to="/terms"
-            className="text-slate-500 hover:text-emerald-600 text-sm font-medium transition-colors"
+            className="text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}
           >
             {t('nav_terms')}
           </Link>
         </nav>
 
         <div className="text-center">
-          <p className="text-slate-400 text-sm font-semibold tracking-wide">
+          <p className="text-sm font-semibold tracking-wide" style={{ color: 'var(--text-muted)' }}>
             {t('footer_copyright')} &copy; {currentYear}
           </p>
-          <p className="text-slate-300 text-xs mt-2 uppercase tracking-[0.2em] font-medium">
+          <p className="text-xs mt-2 uppercase tracking-[0.2em] font-medium" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
             {t('footer_powered')}
           </p>
         </div>

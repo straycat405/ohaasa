@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { FileText, Play, Heart, Copyright, AlertTriangle, RefreshCw, ArrowLeft } from 'lucide-react';
+import { FileText, Play, Heart, Copyright, AlertTriangle, RefreshCw, ArrowLeft, Moon, Sun } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useTheme } from '../context/ThemeContext';
 
 export default function TermsPage() {
   const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -40,52 +42,83 @@ export default function TermsPage() {
 
   return (
     <>
-      <SEO 
+      <SEO
         title={t('terms_title')}
         description={t('terms_intro')}
         canonical="https://ohaasa.site/terms"
       />
 
       <div className="pb-12">
-        <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-10">
+        <header
+          className="backdrop-blur-md sticky top-0 z-10 theme-transition"
+          style={{
+            background: 'var(--header-bg)',
+            borderBottom: '1px solid var(--border-color)'
+          }}
+        >
           <div className="max-w-3xl mx-auto px-4 py-4">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="text-center sm:text-left">
                 <Link
                   to="/"
-                  className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 text-sm font-medium mb-2 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium mb-2 transition-colors hover:opacity-80"
+                  style={{ color: 'var(--accent-primary)' }}
                 >
                   <ArrowLeft className="w-4 h-4" />
                   {t('nav_home')}
                 </Link>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 bg-clip-text text-transparent flex items-center gap-3">
-                  <FileText className="w-6 h-6 text-emerald-500" />
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-3">
+                  <FileText className="w-6 h-6" style={{ color: 'var(--accent-gold)' }} />
                   {t('terms_title')}
                 </h1>
               </div>
 
-              <div className="flex bg-emerald-50 p-1.5 rounded-2xl shadow-inner">
-                {['ko', 'ja', 'en'].map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => changeLanguage(lang)}
-                    className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${
-                      i18n.language === lang
-                        ? 'bg-white shadow-sm text-emerald-600 scale-105'
-                        : 'text-slate-400 hover:text-emerald-500'
-                    }`}
-                  >
-                    {t(`lang_${lang}`)}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleTheme}
+                  className="p-2.5 rounded-xl transition-all hover:scale-110"
+                  style={{
+                    background: 'var(--bg-accent)',
+                    color: 'var(--accent-gold)'
+                  }}
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+
+                <div className="flex p-1.5 rounded-2xl shadow-inner" style={{ background: 'var(--bg-accent)' }}>
+                  {['ko', 'ja', 'en'].map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => changeLanguage(lang)}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                        i18n.language === lang
+                          ? 'shadow-sm scale-105'
+                          : 'hover:opacity-80'
+                      }`}
+                      style={{
+                        background: i18n.language === lang ? 'var(--bg-card)' : 'transparent',
+                        color: i18n.language === lang ? 'var(--accent-primary)' : 'var(--text-muted)'
+                      }}
+                    >
+                      {t(`lang_${lang}`)}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </header>
 
         <main className="max-w-3xl mx-auto px-4 py-10">
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 mb-6">
-            <p className="text-slate-600 leading-relaxed">
+          <div
+            className="rounded-3xl shadow-lg p-6 mb-6 theme-transition"
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-color)'
+            }}
+          >
+            <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               {t('terms_intro')}
             </p>
           </div>
@@ -94,17 +127,24 @@ export default function TermsPage() {
             {sections.map((section, index) => (
               <div
                 key={index}
-                className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-lg"
+                className="rounded-3xl shadow-lg p-6 transition-all hover:shadow-xl theme-transition"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-color)'
+                }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center">
-                    <section.icon className="w-6 h-6 text-emerald-600" />
+                  <div
+                    className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{ background: 'var(--bg-accent)' }}
+                  >
+                    <section.icon className="w-6 h-6" style={{ color: 'var(--accent-gold)' }} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800 mb-2">
+                    <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                       {section.title}
                     </h2>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       {section.content}
                     </p>
                   </div>
@@ -113,8 +153,8 @@ export default function TermsPage() {
             ))}
           </div>
 
-          <div className="mt-8 text-center text-sm text-slate-400">
-            Last updated: January 2026
+          <div className="mt-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+            Last updated: February 2026
           </div>
         </main>
       </div>
