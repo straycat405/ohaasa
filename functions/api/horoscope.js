@@ -50,10 +50,36 @@ function getTodayDateString() {
   return `${year}/${month}/${day}`;
 }
 
+// TV Asahi HTML에서 순위 정보 파싱
+function parseRanking(html) {
+  const ranking = {};
+
+  // rank-box 내의 li 요소들에서 data-label 추출
+  const rankBoxRegex = /<ul[^>]*class="[^"]*rank-box[^"]*"[^>]*>([\s\S]*?)<\/ul>/i;
+  const rankBoxMatch = html.match(rankBoxRegex);
+
+  if (rankBoxMatch) {
+    const rankBox = rankBoxMatch[1];
+    // 각 li 내의 a 태그에서 data-label 추출
+    const liRegex = /<li[^>]*>[\s\S]*?<a[^>]*data-label="([^"]+)"[^>]*>[\s\S]*?<\/li>/gi;
+    let match;
+    let rank = 1;
+    while ((match = liRegex.exec(rankBox)) !== null) {
+      const zodiacId = match[1];
+      ranking[zodiacId] = rank++;
+    }
+  }
+
+  return ranking;
+}
+
 // TV Asahi HTML에서 운세 데이터 파싱
 function parseTVAsahiHTML(html) {
   const results = [];
   const zodiacIds = Object.keys(TVASAHI_ZODIAC_MAP);
+
+  // 먼저 순위 정보 파싱
+  const ranking = parseRanking(html);
 
   for (const zodiacId of zodiacIds) {
     const code = TVASAHI_ZODIAC_MAP[zodiacId];
@@ -92,31 +118,25 @@ function parseTVAsahiHTML(html) {
     const keyMatch = section.match(keyRegex);
     const luckyKey = keyMatch ? keyMatch[1].trim() : '';
 
-    // 1위 여부 확인 (number-one-box 존재 여부)
-    const isNumberOne = section.includes('number-one-box');
+    // 순위 가져오기 (순위 박스에서 파싱한 값 사용, 없으면 코드 순서)
+    const rank = ranking[zodiacId] || parseInt(code);
 
     // lucky 문자열 조합
     const lucky = `ラッキーカラー：${luckyColor} / 幸運のカギ：${luckyKey}`;
 
     results.push({
-      code,
+      rank,
       zodiac,
       content,
-      lucky,
-      isNumberOne
+      lucky
     });
   }
 
-  // 1위를 먼저, 나머지는 코드 순서대로 (랭킹 정보가 없으므로 임의 순서)
-  results.sort((a, b) => {
-    if (a.isNumberOne && !b.isNumberOne) return -1;
-    if (!a.isNumberOne && b.isNumberOne) return 1;
-    return parseInt(a.code) - parseInt(b.code);
-  });
+  // 순위로 정렬
+  results.sort((a, b) => a.rank - b.rank);
 
-  // rank 부여
-  return results.map((item, index) => ({
-    rank: index + 1,
+  return results.map(item => ({
+    rank: item.rank,
     zodiac: item.zodiac,
     content: item.content,
     lucky: item.lucky
