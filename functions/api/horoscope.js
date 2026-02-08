@@ -213,9 +213,9 @@ export async function onRequest(context) {
       // 주말: TV Asahi 사이트에서 데이터 가져오기
       dateStr = getTodayDateString();
 
-      // Cache Check
+      // Cache Check (v2: with proper ranking)
       if (CACHE) {
-        const cached = await CACHE.get(`horo_weekend_${dateStr}`);
+        const cached = await CACHE.get(`horo_weekend_v2_${dateStr}`);
         if (cached) {
           return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'tv-asahi' } });
         }
@@ -284,7 +284,7 @@ export async function onRequest(context) {
 
     // Cache Save
     if (CACHE) {
-      const cacheKey = isWeekend ? `horo_weekend_${dateStr}` : `horo_deepl_${dateStr}`;
+      const cacheKey = isWeekend ? `horo_weekend_v2_${dateStr}` : `horo_deepl_${dateStr}`;
       context.waitUntil(CACHE.put(cacheKey, finalStr, { expirationTtl: 86400 }).catch(() => {}));
     }
 
