@@ -20,10 +20,13 @@ export default function AboutPage() {
       icon: Database,
       title: t('about_source_title'),
       content: t('about_source_desc'),
-      note: t('about_source_note'),
       link: {
         url: 'https://www.asahi.co.jp/ohaasa/week/horoscope/',
         text: t('about_source_link'),
+      },
+      link2: {
+        url: 'https://www.tv-asahi.co.jp/goodmorning/uranai/',
+        text: t('about_source_link2'),
       },
     },
     {
@@ -100,11 +103,6 @@ export default function AboutPage() {
                     <p className="text-slate-600 leading-relaxed">
                       {section.content}
                     </p>
-                    {section.note && (
-                      <p className="text-sm text-amber-600 mt-2">
-                        {section.note}
-                      </p>
-                    )}
                     {section.link && (
                       <a
                         href={section.link.url}
@@ -113,6 +111,17 @@ export default function AboutPage() {
                         className="inline-flex items-center gap-1.5 mt-3 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                       >
                         {section.link.text}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    {section.link2 && (
+                      <a
+                        href={section.link2.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-3 ml-0 sm:ml-4 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                      >
+                        {section.link2.text}
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     )}

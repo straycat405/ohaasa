@@ -11,7 +11,11 @@
       "Bash(gh workflow:*)",
       "WebFetch(domain:adsense-ko.googleblog.com)",
       "Bash(npm install:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:www.tv-asahi.co.jp)",
+      "Bash(node test-horoscope.mjs:*)",
+      "Bash(node test-debug.mjs:*)",
+      "Bash(node:*)"
     ]
   }
 }
