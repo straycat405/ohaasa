@@ -39,8 +39,9 @@ export default function SEO({
     "@type": "WebSite",
     "name": siteName,
     "url": "https://ohaasa.site/",
-    "description": "Daily horoscope rankings from Asahi TV's Ohayo Asahi program.",
-    "inLanguage": currentLang
+    "description": "Daily horoscope rankings from Asahi TV - updated every day including weekends.",
+    "inLanguage": currentLang,
+    "keywords": "horoscope, daily horoscope, weekend horoscope, zodiac, astrology"
   };
 
   return (
