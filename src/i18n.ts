@@ -31,6 +31,8 @@ const resources = {
       about_translation_desc: '일본어 원문은 DeepL을 통해 한국어와 영어로 번역됩니다. AI 번역의 특성상 약간의 오차가 있을 수 있습니다.',
       about_disclaimer_title: '면책 조항',
       about_disclaimer_desc: '본 서비스는 순수하게 오락 목적으로 제공됩니다. 운세 내용은 재미를 위한 것이며, 중요한 결정을 내리는 데 사용해서는 안 됩니다.',
+      about_contact_title: '문의',
+      about_contact_desc: '질문 및 건의사항은 ohaasasite@gmail.com으로 보내주세요.',
       // Privacy Page
       privacy_title: '개인정보처리방침',
       privacy_intro: '본 개인정보처리방침은 오하요 아사히 운세 서비스(이하 "서비스")의 개인정보 수집 및 이용에 관한 내용을 설명합니다.',
@@ -41,7 +43,7 @@ const resources = {
       privacy_third_title: '제3자 서비스',
       privacy_third_desc: '본 서비스는 다음의 제3자 서비스를 사용합니다: Google AdSense (광고), DeepL (번역), Cloudflare Pages (호스팅).',
       privacy_contact_title: '문의',
-      privacy_contact_desc: '개인정보 관련 문의사항은 추후 안내될 연락처로 문의해 주세요.',
+      privacy_contact_desc: '개인정보 관련 문의사항이 있으시면 ohaasasite@gmail.com으로 연락해 주세요.',
       // Terms Page
       terms_title: '이용약관',
       terms_intro: '본 이용약관은 오하요 아사히 운세 서비스(이하 "서비스")의 이용 조건을 규정합니다.',
@@ -86,6 +88,8 @@ const resources = {
       about_translation_desc: '日本語の原文はDeepLを使用して韓国語と英語に翻訳されます。AI翻訳の特性上、多少の誤差がある場合があります。',
       about_disclaimer_title: '免責事項',
       about_disclaimer_desc: '本サービスは純粋にエンターテインメント目的で提供されています。占いの内容は楽しみのためのものであり、重要な決定を下す際に使用すべきではありません。',
+      about_contact_title: 'お問い合わせ',
+      about_contact_desc: 'ご質問やご提案は ohaasasite@gmail.com までお送りください。',
       // Privacy Page
       privacy_title: 'プライバシーポリシー',
       privacy_intro: '本プライバシーポリシーは、おはよう朝日占いサービス（以下「サービス」）の個人情報の収集および利用について説明します。',
@@ -96,7 +100,7 @@ const resources = {
       privacy_third_title: 'サードパーティサービス',
       privacy_third_desc: '本サービスは以下のサードパーティサービスを使用しています：Google AdSense（広告）、DeepL（翻訳）、Cloudflare Pages（ホスティング）。',
       privacy_contact_title: 'お問い合わせ',
-      privacy_contact_desc: 'プライバシーに関するお問い合わせは、後日案内される連絡先までご連絡ください。',
+      privacy_contact_desc: 'プライバシーに関するお問い合わせは、ohaasasite@gmail.comまでご連絡ください。',
       // Terms Page
       terms_title: '利用規約',
       terms_intro: '本利用規約は、おはよう朝日占いサービス（以下「サービス」）の利用条件を規定します。',
@@ -141,6 +145,8 @@ const resources = {
       about_translation_desc: 'Japanese original text is translated into Korean and English using DeepL. Due to the nature of AI translation, there may be minor inaccuracies.',
       about_disclaimer_title: 'Disclaimer',
       about_disclaimer_desc: 'This service is provided purely for entertainment purposes. Horoscope content is meant for fun and should not be used for making important decisions.',
+      about_contact_title: 'Contact',
+      about_contact_desc: 'For questions or suggestions, please email us at ohaasasite@gmail.com.',
       // Privacy Page
       privacy_title: 'Privacy Policy',
       privacy_intro: 'This Privacy Policy explains how Ohayo Asahi Horoscope service ("Service") collects and uses personal information.',
@@ -151,7 +157,7 @@ const resources = {
       privacy_third_title: 'Third-Party Services',
       privacy_third_desc: 'This Service uses the following third-party services: Google AdSense (advertising), DeepL (translation), Cloudflare Pages (hosting).',
       privacy_contact_title: 'Contact',
-      privacy_contact_desc: 'For privacy-related inquiries, contact information will be provided soon.',
+      privacy_contact_desc: 'For privacy-related inquiries, please contact us at ohaasasite@gmail.com.',
       // Terms Page
       terms_title: 'Terms of Service',
       terms_intro: 'These Terms of Service govern the use of Ohayo Asahi Horoscope service ("Service").',
