@@ -32,7 +32,7 @@ const resources = {
       about_disclaimer_title: '면책 조항',
       about_disclaimer_desc: '본 서비스는 순수하게 오락 목적으로 제공됩니다. 운세 내용은 재미를 위한 것이며, 중요한 결정을 내리는 데 사용해서는 안 됩니다.',
       about_contact_title: '문의',
-      about_contact_desc: '질문 및 건의사항은 ohaasasite@gmail.com으로 보내주세요.',
+      about_contact_desc: '질문 및 건의사항은 ohaasasite@gmail.com 으로 보내주세요.',
       // Privacy Page
       privacy_title: '개인정보처리방침',
       privacy_intro: '본 개인정보처리방침은 오하요 아사히 운세 서비스(이하 "서비스")의 개인정보 수집 및 이용에 관한 내용을 설명합니다.',
@@ -43,7 +43,7 @@ const resources = {
       privacy_third_title: '제3자 서비스',
       privacy_third_desc: '본 서비스는 다음의 제3자 서비스를 사용합니다: Google AdSense (광고), DeepL (번역), Cloudflare Pages (호스팅).',
       privacy_contact_title: '문의',
-      privacy_contact_desc: '개인정보 관련 문의사항이 있으시면 ohaasasite@gmail.com으로 연락해 주세요.',
+      privacy_contact_desc: '개인정보 관련 문의사항이 있으시면 ohaasasite@gmail.com 으로 연락해 주세요.',
       // Terms Page
       terms_title: '이용약관',
       terms_intro: '본 이용약관은 오하요 아사히 운세 서비스(이하 "서비스")의 이용 조건을 규정합니다.',
@@ -100,7 +100,7 @@ const resources = {
       privacy_third_title: 'サードパーティサービス',
       privacy_third_desc: '本サービスは以下のサードパーティサービスを使用しています：Google AdSense（広告）、DeepL（翻訳）、Cloudflare Pages（ホスティング）。',
       privacy_contact_title: 'お問い合わせ',
-      privacy_contact_desc: 'プライバシーに関するお問い合わせは、ohaasasite@gmail.comまでご連絡ください。',
+      privacy_contact_desc: 'プライバシーに関するお問い合わせは、ohaasasite@gmail.com までご連絡ください。',
       // Terms Page
       terms_title: '利用規約',
       terms_intro: '本利用規約は、おはよう朝日占いサービス（以下「サービス」）の利用条件を規定します。',
