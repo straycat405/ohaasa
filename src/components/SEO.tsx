@@ -14,7 +14,7 @@ export default function SEO({
   title, 
   description, 
   canonical = 'https://ohaasa.site/', 
-  image = 'https://ohaasa.site/og-image.png',
+  image = 'https://ohaasa.site/og-image-v2.png',
   type = 'website',
   keywords
 }: SEOProps) {
@@ -30,7 +30,7 @@ export default function SEO({
     }
   };
 
-  const siteName = 'Ohayo Asahi Horoscope';
+  const siteName = '오하아사 별자리운세 | Ohaasa';
   const fullTitle = `${title} | ${siteName}`;
 
   // Structured Data (JSON-LD)
@@ -38,10 +38,11 @@ export default function SEO({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
+    "alternateName": ["오하아사", "Ohaasa", "오하요아사히데스"],
     "url": "https://ohaasa.site/",
-    "description": "Daily horoscope rankings from Asahi TV - updated every day including weekends.",
+    "description": "오하아사(Ohaasa) 별자리운세 - 아사히 TV 오하요아사히데스의 오늘의 별자리운세. 주말 포함 매일 업데이트.",
     "inLanguage": currentLang,
-    "keywords": "horoscope, daily horoscope, weekend horoscope, zodiac, astrology"
+    "keywords": "오하아사, ohaasa, 별자리운세, 오하아사 별자리운세, 오하아사 운세, 오늘의 별자리운세, 주말 운세, 星座占い, horoscope, daily horoscope, weekend horoscope"
   };
 
   return (
