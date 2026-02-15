@@ -4,30 +4,15 @@ interface ZodiacIconProps {
   sign: string;
   className?: string;
   fill?: string;
+  style?: React.CSSProperties;
 }
 
-export const ZodiacIcon: React.FC<ZodiacIconProps> = ({ sign, className = '', fill = 'currentColor' }) => {
+export const ZodiacIcon: React.FC<ZodiacIconProps> = ({ sign, className = '', fill = 'currentColor', style }) => {
   const normalizedSign = sign.toLowerCase().trim();
 
-  // Simple SVG paths for Zodiac signs
-  const paths: Record<string, string> = {
-    aries: "M12 21a9 9 0 0 0 9-9h-2a7 7 0 0 1-7 7 7 7 0 0 1-7-7H3a9 9 0 0 0 9 9z M12 7a5 5 0 1 0-4-4.5 1 1 0 0 1-2 0A7 7 0 1 1 12 13a7 7 0 1 1 6-10.5 1 1 0 0 1-2 0A5 5 0 1 0 12 7z",
-    taurus: "M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M12 6a7 7 0 0 1 5.9-3.5 1 1 0 0 1 0 2A5 5 0 0 0 12 8a5 5 0 0 0-5.9-3.5 1 1 0 0 1 0-2A7 7 0 0 1 12 6z",
-    gemini: "M15 21V3a1 1 0 0 0-2 0v18a1 1 0 0 0 2 0z M11 21V3a1 1 0 0 0-2 0v18a1 1 0 0 0 2 0z M4.5 5a10 10 0 0 1 15 0 M4.5 19a10 10 0 0 0 15 0",
-    cancer: "M6 12a6 6 0 1 0 9-5 1 1 0 1 1 0-2 8 8 0 1 1-9 7z M18 12a6 6 0 1 0-9 5 1 1 0 1 1 0 2 8 8 0 1 1 9-7z",
-    leo: "M12 4a3 3 0 1 0-3 3 1 1 0 0 1-1 1 4 4 0 1 1 0 8 1 1 0 1 0 0 2 6 6 0 1 0 0-12 1 1 0 0 0 1-1 5 5 0 1 1 8 0 1 1 0 0 1 2 0 7 7 0 1 0-7-1z",
-    virgo: "M4.5 7.5a4 4 0 0 1 4 4v7.5 M11.5 7.5a4 4 0 0 1 4 4v7.5 M19.5 7.5a4 4 0 0 0-4 4v2.5a5 5 0 0 1-5 5 M16.5 16.5a2 2 0 1 1 2 2",
-    libra: "M5 20h14 M5 16h14 M12 4a6 6 0 0 0-6 6h2a4 4 0 1 1 8 0h2a6 6 0 0 0-6-6z",
-    scorpio: "M4.5 6.5a4 4 0 0 1 4 4v7.5 M11.5 6.5a4 4 0 0 1 4 4v7.5 M18.5 6.5a4 4 0 0 1 4 4v2.5l2 2 2-2",
-    sagittarius: "M12 3v18 M3 12h18 M16 7l5 5-5 5 M21 12l-5-5", // Simplified Arrow
-    capricorn: "M4 10a4 4 0 1 1 0-5 2 2 0 1 0 0 4v7a4 4 0 0 0 8 0 1 1 0 0 1 2 0 6 6 0 0 1-12 0",
-    aquarius: "M2 10c2.5-3.5 6-1.5 7.5 0s5 3.5 7.5 0 5-3.5 5-3.5 M2 14c2.5-3.5 6-1.5 7.5 0s5 3.5 7.5 0 5-3.5 5-3.5",
-    pisces: "M5 4c3 5 3 11 0 16 M19 4c-3 5-3 11 0 16 M5 12h14"
-  };
-  
   // Refined SVG paths for a more consistent look
   // Using open source icons logic, these are simplified representations.
-  const svgPaths: Record<string, JSX.Element> = {
+  const svgPaths: Record<string, React.ReactNode> = {
     aries: (
       <path d="M12 20a1 1 0 0 1-1-1v-8a1 1 0 0 1 2 0v8a1 1 0 0 1-1 1zm-4-4a4 4 0 0 1 0-8 1 1 0 0 1 .71.29 1 1 0 0 1 0 1.42 2 2 0 0 0 0 2.82 2 2 0 1 0 0 4 1 1 0 0 1 0 2 4.05 4.05 0 0 1-.71-.53zM16 8a4 4 0 0 1 0 8 1 1 0 0 1-.71.53 1 1 0 0 1 0-2 2 2 0 1 0 0-4 2 2 0 0 0 0-2.82 1 1 0 0 1 0-1.42A1 1 0 0 1 16 8z" />
     ),
@@ -76,6 +61,7 @@ export const ZodiacIcon: React.FC<ZodiacIconProps> = ({ sign, className = '', fi
       viewBox="0 0 24 24" 
       fill={fill}
       className={className}
+      style={style}
     >
       {path}
     </svg>
