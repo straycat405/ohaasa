@@ -251,9 +251,9 @@ export default function HomePage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                           <div className="p-2 rounded-xl" style={{ background: 'var(--bg-accent)' }}>
-                            <ZodiacIcon sign={getSignKey(item)} className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
+                        <div className="flex items-center gap-4">
+                           <div className="p-2.5 rounded-xl shrink-0" style={{ background: 'var(--bg-accent)' }}>
+                            <ZodiacIcon sign={getSignKey(item)} className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
                            </div>
                            <div>
                             <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
