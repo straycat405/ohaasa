@@ -206,50 +206,64 @@ export async function onRequest(context) {
   };
 
   try {
-    const isWeekend = isWeekendInJapan();
+    const todayStr = getTodayDateString();
+    const todayCompact = todayStr.replace(/\//g, ''); // YYYYMMDD 형식
     let dateStr, parsed;
+    let source = 'ohaasa';
 
-    if (isWeekend) {
-      // 주말: TV Asahi 사이트에서 데이터 가져오기
-      dateStr = getTodayDateString();
-
-      // Cache Check (v2: with proper ranking)
-      if (CACHE) {
-        const cached = await CACHE.get(`horo_weekend_v2_${dateStr}`);
-        if (cached) {
-          return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'tv-asahi' } });
-        }
+    // 먼저 캐시 확인 (오늘 날짜 기준)
+    if (CACHE) {
+      // ohaasa 캐시 확인
+      const cachedOhaasa = await CACHE.get(`horo_deepl_${todayCompact}`);
+      if (cachedOhaasa) {
+        return new Response(cachedOhaasa, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'ohaasa' } });
       }
+      // TV Asahi 캐시 확인
+      const cachedTVAsahi = await CACHE.get(`horo_weekend_v2_${todayStr}`);
+      if (cachedTVAsahi) {
+        return new Response(cachedTVAsahi, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'tv-asahi' } });
+      }
+    }
 
+    // 평일: 먼저 asahi.co.jp API 시도
+    const isWeekend = isWeekendInJapan();
+    let useOhaasa = false;
+
+    if (!isWeekend) {
+      try {
+        const res = await fetch('https://www.asahi.co.jp/data/ohaasa2020/horoscope.json', {
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+
+        if (res.ok) {
+          const rawData = await res.json();
+          const item = Array.isArray(rawData) ? rawData[0] : rawData;
+          const apiDate = item?.onair_date;
+
+          // API 날짜가 오늘과 일치하는지 확인
+          if (apiDate === todayCompact && item.detail) {
+            dateStr = apiDate;
+            parsed = item.detail
+              .sort((a, b) => parseInt(a.ranking_no) - parseInt(b.ranking_no))
+              .map(d => ({
+                rank: parseInt(d.ranking_no, 10),
+                zodiac: ZODIAC_MAP[d.horoscope_st] || { jp: '', ko: '', en: '' },
+                ...parseHoroscopeText(d.horoscope_text),
+              }));
+            useOhaasa = true;
+          }
+        }
+      } catch (e) {
+        // ohaasa API 실패 시 TV Asahi로 fallback
+        console.log('Ohaasa API failed, falling back to TV Asahi:', e.message);
+      }
+    }
+
+    // ohaasa가 오래된 데이터거나 주말인 경우 TV Asahi 사용
+    if (!useOhaasa) {
+      dateStr = todayStr;
       parsed = await fetchWeekendHoroscope();
-    } else {
-      // 평일: 기존 asahi.co.jp API 사용
-      const res = await fetch('https://www.asahi.co.jp/data/ohaasa2020/horoscope.json', {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-
-      if (!res.ok) throw new Error(`External source failed: ${res.status}`);
-
-      const rawData = await res.json();
-      const item = Array.isArray(rawData) ? rawData[0] : rawData;
-      dateStr = item?.onair_date;
-      if (!dateStr || !item.detail) throw new Error('Source data format invalid');
-
-      // Cache Check
-      if (CACHE) {
-        const cached = await CACHE.get(`horo_deepl_${dateStr}`);
-        if (cached) {
-          return new Response(cached, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'ohaasa' } });
-        }
-      }
-
-      parsed = item.detail
-        .sort((a, b) => parseInt(a.ranking_no) - parseInt(b.ranking_no))
-        .map(d => ({
-          rank: parseInt(d.ranking_no, 10),
-          zodiac: ZODIAC_MAP[d.horoscope_st] || { jp: '', ko: '', en: '' },
-          ...parseHoroscopeText(d.horoscope_text),
-        }));
+      source = 'tv-asahi';
     }
 
     const contents = parsed.map(p => p.content);
@@ -284,7 +298,7 @@ export async function onRequest(context) {
 
     // Cache Save (7 days TTL for historical data access)
     if (CACHE) {
-      const cacheKey = isWeekend ? `horo_weekend_v2_${dateStr}` : `horo_deepl_${dateStr}`;
+      const cacheKey = source === 'tv-asahi' ? `horo_weekend_v2_${dateStr}` : `horo_deepl_${dateStr}`;
       context.waitUntil(CACHE.put(cacheKey, finalStr, { expirationTtl: 604800 }).catch(() => {}));
     }
 
@@ -292,7 +306,7 @@ export async function onRequest(context) {
       headers: {
         ...headers,
         'X-Cache': 'MISS',
-        'X-Source': isWeekend ? 'tv-asahi' : 'ohaasa'
+        'X-Source': source
       }
     });
 
