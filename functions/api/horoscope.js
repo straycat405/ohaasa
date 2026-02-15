@@ -32,18 +32,29 @@ const TVASAHI_ZODIAC_MAP = {
   'uo': '12',
 };
 
-// 일본 시간 기준 주말 여부 확인
-function isWeekendInJapan() {
+// 일본 시간 기준 운세 날짜 계산 (7시 이전이면 전날)
+function getHoroscopeDate() {
   const now = new Date();
   const japanTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+
+  // 7시 이전이면 전날 날짜 사용 (오하아사 방송 시간 기준)
+  if (japanTime.getHours() < 7) {
+    japanTime.setDate(japanTime.getDate() - 1);
+  }
+
+  return japanTime;
+}
+
+// 일본 시간 기준 주말 여부 확인 (7시 이전이면 전날 기준)
+function isWeekendInJapan() {
+  const japanTime = getHoroscopeDate();
   const day = japanTime.getDay();
   return day === 0 || day === 6; // 일요일(0) 또는 토요일(6)
 }
 
-// 일본 시간 기준 오늘 날짜 문자열
+// 일본 시간 기준 운세 날짜 문자열 (7시 이전이면 전날)
 function getTodayDateString() {
-  const now = new Date();
-  const japanTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  const japanTime = getHoroscopeDate();
   const year = japanTime.getFullYear();
   const month = String(japanTime.getMonth() + 1).padStart(2, '0');
   const day = String(japanTime.getDate()).padStart(2, '0');
