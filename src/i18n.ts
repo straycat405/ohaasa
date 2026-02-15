@@ -6,6 +6,7 @@ const resources = {
     translation: {
       title: '오늘의 별자리 운세',
       subtitle: '아사히 TV "오하아사" 기준 별자리 순위',
+      update_notice: '매일 아침 7시 업데이트',
       rank: '위',
       luckyItem: '행운의 아이템/액션',
       lang_ko: '한국어',
@@ -63,6 +64,7 @@ const resources = {
     translation: {
       title: '今日の星座占い',
       subtitle: '朝日放送「おはよう朝日です」より',
+      update_notice: '毎朝7時更新',
       rank: '位',
       luckyItem: 'ラッキーアイテム/アクション',
       lang_ko: '한국어',
@@ -120,6 +122,7 @@ const resources = {
     translation: {
       title: 'Daily Horoscope',
       subtitle: 'Based on Asahi TV "Oha-Asa" Rankings',
+      update_notice: 'Updated daily at 7 AM',
       rank: 'st/nd/rd/th',
       luckyItem: 'Lucky Item/Action',
       lang_ko: 'Korean',

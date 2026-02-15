@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Star, Sparkles, Crown, Clover, Moon, Sun } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTheme } from '../context/ThemeContext';
+import { ZodiacIcon } from '../components/ZodiacIcon';
 
 interface LanguageContent {
   jp: string;
@@ -84,6 +85,7 @@ export default function HomePage() {
   const getSignName = (item: Horoscope) => item.zodiac?.[getLangKey()] || '';
   const getContent = (item: Horoscope) => item.content?.[getLangKey()] || '';
   const getLucky = (item: Horoscope) => item.lucky?.[getLangKey()] || '';
+  const getSignKey = (item: Horoscope) => item.zodiac?.en || '';
 
   const zodiacDateRanges: Record<string, string> = {
     '염소자리': '12/22 ~ 1/19',
@@ -176,6 +178,9 @@ export default function HomePage() {
                 </h1>
                 <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-muted)' }}>
                   {formatDisplayDate(data.date)} | {t('subtitle')}
+                  <br className="sm:hidden"/>
+                  <span className="hidden sm:inline"> | </span>
+                  <span className="text-xs opacity-75">{t('update_notice')}</span>
                 </p>
               </div>
 
@@ -246,13 +251,18 @@ export default function HomePage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                            {getSignName(item)}
-                          </h2>
-                          <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                            {getDateRange(item)}
-                          </span>
+                        <div className="flex items-center gap-3">
+                           <div className="p-2 rounded-xl" style={{ background: 'var(--bg-accent)' }}>
+                            <ZodiacIcon sign={getSignKey(item)} className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
+                           </div>
+                           <div>
+                            <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                              {getSignName(item)}
+                            </h2>
+                            <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                              {getDateRange(item)}
+                            </span>
+                           </div>
                         </div>
                         {item.rank === 1 && (
                           <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg shadow-amber-400/30 animate-bounce">
