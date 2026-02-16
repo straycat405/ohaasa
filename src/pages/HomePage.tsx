@@ -111,9 +111,25 @@ export default function HomePage() {
     if (!dateStr) return '';
     const clean = String(dateStr).replace(/[^0-9]/g, '');
     if (clean.length === 8) {
+      const y = parseInt(clean.substring(0, 4));
       const m = parseInt(clean.substring(4, 6));
       const d = parseInt(clean.substring(6, 8));
-      return i18n.language === 'ja' ? `${m}月${d}日` : `${m}/${d}`;
+      const date = new Date(y, m - 1, d);
+      const dayIndex = date.getDay();
+
+      const dayNames = {
+        ko: ['일', '월', '화', '수', '목', '금', '토'],
+        ja: ['日', '月', '火', '水', '木', '金', '土'],
+        en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      };
+
+      const lang = i18n.language === 'ja' ? 'ja' : i18n.language === 'en' ? 'en' : 'ko';
+      const dayName = dayNames[lang][dayIndex];
+
+      if (lang === 'ja') {
+        return `${m}月${d}日(${dayName})`;
+      }
+      return `${m}/${d} (${dayName})`;
     }
     return dateStr;
   };
