@@ -222,22 +222,24 @@ export async function onRequest(context) {
     let dateStr, parsed;
     let source = 'ohaasa';
 
-    // 먼저 캐시 확인 (오늘 날짜 기준)
+    const isWeekend = isWeekendInJapan();
+
+    // 먼저 캐시 확인 (오늘 날짜 + 요일 기준)
     if (CACHE) {
-      // ohaasa 캐시 확인
-      const cachedOhaasa = await CACHE.get(`horo_deepl_${todayCompact}`);
-      if (cachedOhaasa) {
-        return new Response(cachedOhaasa, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'ohaasa' } });
-      }
-      // TV Asahi 캐시 확인
-      const cachedTVAsahi = await CACHE.get(`horo_weekend_v2_${todayStr}`);
-      if (cachedTVAsahi) {
-        return new Response(cachedTVAsahi, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'tv-asahi' } });
+      if (!isWeekend) {
+        // 평일: ohaasa 캐시만 확인
+        const cachedOhaasa = await CACHE.get(`horo_deepl_${todayCompact}`);
+        if (cachedOhaasa) {
+          return new Response(cachedOhaasa, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'ohaasa' } });
+        }
+      } else {
+        // 주말: TV Asahi 캐시 확인
+        const cachedTVAsahi = await CACHE.get(`horo_weekend_v2_${todayStr}`);
+        if (cachedTVAsahi) {
+          return new Response(cachedTVAsahi, { headers: { ...headers, 'X-Cache': 'HIT', 'X-Source': 'tv-asahi' } });
+        }
       }
     }
-
-    // 평일: 먼저 asahi.co.jp API 시도
-    const isWeekend = isWeekendInJapan();
     let useOhaasa = false;
 
     if (!isWeekend) {
