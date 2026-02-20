@@ -502,7 +502,7 @@ export default function HomePage() {
                         <button
                           onClick={() => handleLike(getSignKey(item))}
                           disabled={likedSigns.has(getZodiacCode(item))}
-                          className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                          className={`relative overflow-visible inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
                             likedSigns.has(getZodiacCode(item))
                               ? 'cursor-default'
                               : 'cursor-pointer hover:scale-105 active:scale-95'
@@ -522,13 +522,26 @@ export default function HomePage() {
                         >
                           {/* 버스트 효과 */}
                           {burstingLike === getZodiacCode(item) && (
-                            <span className="absolute inset-0 pointer-events-none overflow-visible">
-                              {[...Array(6)].map((_, i) => (
+                            <span className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }}>
+                              {[
+                                { color: '#f43f5e', x: 20, y: 0 },
+                                { color: '#ec4899', x: 10, y: 17 },
+                                { color: '#f97316', x: -10, y: 17 },
+                                { color: '#eab308', x: -20, y: 0 },
+                                { color: '#22c55e', x: -10, y: -17 },
+                                { color: '#3b82f6', x: 10, y: -17 },
+                              ].map((p, i) => (
                                 <span
                                   key={i}
-                                  className={`absolute left-1/2 top-1/2 w-2 h-2 rounded-full animate-like-burst-${i}`}
                                   style={{
-                                    background: ['#f43f5e', '#ec4899', '#f97316', '#eab308', '#22c55e', '#3b82f6'][i],
+                                    position: 'absolute',
+                                    left: '50%',
+                                    top: '50%',
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: '50%',
+                                    background: p.color,
+                                    animation: `likeBurst${i} 0.5s ease-out forwards`,
                                   }}
                                 />
                               ))}

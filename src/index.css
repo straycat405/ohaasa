@@ -268,16 +268,9 @@ body {
 }
 
 /* 좋아요 버스트 애니메이션 */
-@keyframes like-burst-0 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(20px, 0) scale(0); opacity: 0; } }
-@keyframes like-burst-1 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, 17px) scale(0); opacity: 0; } }
-@keyframes like-burst-2 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, 17px) scale(0); opacity: 0; } }
-@keyframes like-burst-3 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-20px, 0) scale(0); opacity: 0; } }
-@keyframes like-burst-4 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, -17px) scale(0); opacity: 0; } }
-@keyframes like-burst-5 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, -17px) scale(0); opacity: 0; } }
-
-.animate-like-burst-0 { animation: like-burst-0 0.5s ease-out forwards; }
-.animate-like-burst-1 { animation: like-burst-1 0.5s ease-out forwards; }
-.animate-like-burst-2 { animation: like-burst-2 0.5s ease-out forwards; }
-.animate-like-burst-3 { animation: like-burst-3 0.5s ease-out forwards; }
-.animate-like-burst-4 { animation: like-burst-4 0.5s ease-out forwards; }
-.animate-like-burst-5 { animation: like-burst-5 0.5s ease-out forwards; }
+@keyframes likeBurst0 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(20px, 0) scale(0); opacity: 0; } }
+@keyframes likeBurst1 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, 17px) scale(0); opacity: 0; } }
+@keyframes likeBurst2 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, 17px) scale(0); opacity: 0; } }
+@keyframes likeBurst3 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-20px, 0) scale(0); opacity: 0; } }
+@keyframes likeBurst4 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, -17px) scale(0); opacity: 0; } }
+@keyframes likeBurst5 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, -17px) scale(0); opacity: 0; } }
