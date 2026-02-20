@@ -85,6 +85,7 @@ export default function HomePage() {
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [likedSigns, setLikedSigns] = useState<Set<string>>(new Set());
   const [visitors, setVisitors] = useState<{ total: number; today: number; yesterday: number }>({ total: 0, today: 0, yesterday: 0 });
+  const [burstingLike, setBurstingLike] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,6 +203,10 @@ export default function HomePage() {
     setLikes(prev => ({ ...prev, [zodiacCode]: previousLikes + 1 }));
     setLikedSigns(prev => new Set([...prev, zodiacCode]));
     saveLikedSign(zodiacCode);
+
+    // 버스트 애니메이션 트리거
+    setBurstingLike(zodiacCode);
+    setTimeout(() => setBurstingLike(null), 700);
 
     // 백그라운드에서 API 호출
     try {
@@ -497,10 +502,10 @@ export default function HomePage() {
                         <button
                           onClick={() => handleLike(getSignKey(item))}
                           disabled={likedSigns.has(getZodiacCode(item))}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                          className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
                             likedSigns.has(getZodiacCode(item))
                               ? 'cursor-default'
-                              : 'hover:scale-105 active:scale-95'
+                              : 'cursor-pointer hover:scale-105 active:scale-95'
                           }`}
                           style={{
                             background: likedSigns.has(getZodiacCode(item))
@@ -510,10 +515,27 @@ export default function HomePage() {
                               ? 'white'
                               : 'var(--text-muted)',
                           }}
+                          title={likedSigns.has(getZodiacCode(item))
+                            ? t('like_done')
+                            : t('like_action')}
                           aria-label={t('like_aria', { sign: getSignName(item) })}
                         >
+                          {/* 버스트 효과 */}
+                          {burstingLike === getZodiacCode(item) && (
+                            <span className="absolute inset-0 pointer-events-none overflow-visible">
+                              {[...Array(6)].map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`absolute left-1/2 top-1/2 w-2 h-2 rounded-full animate-like-burst-${i}`}
+                                  style={{
+                                    background: ['#f43f5e', '#ec4899', '#f97316', '#eab308', '#22c55e', '#3b82f6'][i],
+                                  }}
+                                />
+                              ))}
+                            </span>
+                          )}
                           <Heart
-                            className={`w-4 h-4 ${likedSigns.has(getZodiacCode(item)) ? 'fill-current' : ''}`}
+                            className={`w-4 h-4 transition-transform ${likedSigns.has(getZodiacCode(item)) ? 'fill-current' : ''} ${burstingLike === getZodiacCode(item) ? 'scale-125' : ''}`}
                           />
                           <span>{likes[getZodiacCode(item)] || 0}</span>
                         </button>

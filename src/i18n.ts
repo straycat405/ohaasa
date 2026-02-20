@@ -14,6 +14,8 @@ const resources = {
       lang_en: 'English',
       loading: '운세를 가져오는 중...',
       like_aria: '{{sign}} 좋아요',
+      like_action: '좋아요',
+      like_done: '1시간 후 다시 가능',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
       footer_powered: 'Powered by DeepL | Data from Asahi TV',
@@ -73,6 +75,8 @@ const resources = {
       lang_en: 'English',
       loading: '占いを取得中...',
       like_aria: '{{sign}}にいいね',
+      like_action: 'いいね',
+      like_done: '1時間後に再度可能',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
       footer_powered: 'Powered by DeepL | Data from Asahi TV',
@@ -132,6 +136,8 @@ const resources = {
       lang_en: 'English',
       loading: 'Loading horoscope...',
       like_aria: 'Like {{sign}}',
+      like_action: 'Like',
+      like_done: 'Available again in 1 hour',
       // Footer
       footer_copyright: 'OHAYO ASAHI HOROSCOPE',
       footer_powered: 'Powered by DeepL | Data from Asahi TV',
