@@ -82,8 +82,8 @@ export async function onRequest(context) {
       // 좋아요 수 저장 (영구 저장)
       await CACHE.put(likesKey, JSON.stringify({ count: newCount }));
 
-      // 중복 방지 키 저장 (24시간 TTL)
-      await CACHE.put(rateLimitKey, JSON.stringify({ timestamp: Date.now() }), { expirationTtl: 86400 });
+      // 중복 방지 키 저장 (1시간 TTL)
+      await CACHE.put(rateLimitKey, JSON.stringify({ timestamp: Date.now() }), { expirationTtl: 3600 });
 
       return new Response(JSON.stringify({ success: true, count: newCount }), { headers });
     }

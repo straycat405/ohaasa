@@ -34,19 +34,30 @@ function getClientId(): string {
   return clientId;
 }
 
-// 좋아요한 별자리 추적
+// 좋아요한 별자리 추적 (1시간 후 다시 좋아요 가능)
+const LIKE_COOLDOWN_MS = 60 * 60 * 1000; // 1시간
+
 function getLikedSigns(): Set<string> {
-  const stored = localStorage.getItem('liked_signs');
+  const stored = localStorage.getItem('liked_signs_v2');
   if (stored) {
-    return new Set(JSON.parse(stored));
+    const data: Record<string, number> = JSON.parse(stored);
+    const now = Date.now();
+    const activeLikes = new Set<string>();
+    for (const [code, timestamp] of Object.entries(data)) {
+      if (now - timestamp < LIKE_COOLDOWN_MS) {
+        activeLikes.add(code);
+      }
+    }
+    return activeLikes;
   }
   return new Set();
 }
 
 function saveLikedSign(zodiacCode: string): void {
-  const liked = getLikedSigns();
-  liked.add(zodiacCode);
-  localStorage.setItem('liked_signs', JSON.stringify([...liked]));
+  const stored = localStorage.getItem('liked_signs_v2');
+  const data: Record<string, number> = stored ? JSON.parse(stored) : {};
+  data[zodiacCode] = Date.now();
+  localStorage.setItem('liked_signs_v2', JSON.stringify(data));
 }
 
 // 영문 별자리명 → 코드 변환
