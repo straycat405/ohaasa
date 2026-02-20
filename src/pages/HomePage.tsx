@@ -122,7 +122,7 @@ export default function HomePage() {
     fetchData();
   }, []);
 
-  // 좋아요 데이터 로드
+  // 좋아요 데이터 로드 + 30초 폴링
   useEffect(() => {
     // localStorage에서 좋아요 상태 로드
     setLikedSigns(getLikedSigns());
@@ -138,8 +138,16 @@ export default function HomePage() {
       } catch (err) {
         console.error('Failed to fetch likes:', err);
       }
+      // 쿨다운 지난 좋아요 상태 갱신
+      setLikedSigns(getLikedSigns());
     };
+
+    // 초기 로드
     fetchLikes();
+
+    // 30초마다 폴링
+    const interval = setInterval(fetchLikes, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // 좋아요 처리 함수
