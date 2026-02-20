@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, Sparkles, Crown, Clover, Moon, Sun } from 'lucide-react';
+import { Star, Sparkles, Crown, Clover, Moon, Sun, Heart } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useTheme } from '../context/ThemeContext';
 import { ZodiacIcon } from '../components/ZodiacIcon';
@@ -23,12 +23,57 @@ interface HoroscopeData {
   horoscope: Horoscope[];
 }
 
+// 클라이언트 고유 ID 관리
+function getClientId(): string {
+  const storageKey = 'horoscope_client_id';
+  let clientId = localStorage.getItem(storageKey);
+  if (!clientId) {
+    clientId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    localStorage.setItem(storageKey, clientId);
+  }
+  return clientId;
+}
+
+// 좋아요한 별자리 추적
+function getLikedSigns(): Set<string> {
+  const stored = localStorage.getItem('liked_signs');
+  if (stored) {
+    return new Set(JSON.parse(stored));
+  }
+  return new Set();
+}
+
+function saveLikedSign(zodiacCode: string): void {
+  const liked = getLikedSigns();
+  liked.add(zodiacCode);
+  localStorage.setItem('liked_signs', JSON.stringify([...liked]));
+}
+
+// 영문 별자리명 → 코드 변환
+const ZODIAC_TO_CODE: Record<string, string> = {
+  'Aries': '01',
+  'Taurus': '02',
+  'Gemini': '03',
+  'Cancer': '04',
+  'Leo': '05',
+  'Virgo': '06',
+  'Libra': '07',
+  'Scorpio': '08',
+  'Sagittarius': '09',
+  'Capricorn': '10',
+  'Aquarius': '11',
+  'Pisces': '12',
+};
+
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const [data, setData] = useState<HoroscopeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorDesc, setErrorDesc] = useState<string | null>(null);
+  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [likedSigns, setLikedSigns] = useState<Set<string>>(new Set());
+  const [likingInProgress, setLikingInProgress] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +110,66 @@ export default function HomePage() {
     };
     fetchData();
   }, []);
+
+  // 좋아요 데이터 로드
+  useEffect(() => {
+    // localStorage에서 좋아요 상태 로드
+    setLikedSigns(getLikedSigns());
+
+    // 서버에서 좋아요 수 가져오기
+    const fetchLikes = async () => {
+      try {
+        const response = await fetch('/api/likes');
+        if (response.ok) {
+          const data = await response.json();
+          setLikes(data.likes || {});
+        }
+      } catch (err) {
+        console.error('Failed to fetch likes:', err);
+      }
+    };
+    fetchLikes();
+  }, []);
+
+  // 좋아요 처리 함수
+  const handleLike = async (zodiacEnName: string) => {
+    const zodiacCode = ZODIAC_TO_CODE[zodiacEnName];
+    if (!zodiacCode || likedSigns.has(zodiacCode) || likingInProgress) return;
+
+    setLikingInProgress(zodiacCode);
+
+    try {
+      const clientId = getClientId();
+      const response = await fetch('/api/likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zodiacCode, clientId }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // 성공: 상태 업데이트
+        setLikes(prev => ({ ...prev, [zodiacCode]: result.count }));
+        setLikedSigns(prev => new Set([...prev, zodiacCode]));
+        saveLikedSign(zodiacCode);
+      } else if (result.code === 'ALREADY_LIKED') {
+        // 이미 좋아요한 경우: localStorage 동기화
+        setLikedSigns(prev => new Set([...prev, zodiacCode]));
+        saveLikedSign(zodiacCode);
+      }
+    } catch (err) {
+      console.error('Failed to like:', err);
+    } finally {
+      setLikingInProgress(null);
+    }
+  };
+
+  // 별자리 코드 가져오기
+  const getZodiacCode = (item: Horoscope): string => {
+    const enName = item.zodiac?.en || '';
+    return ZODIAC_TO_CODE[enName] || '';
+  };
 
   const sortedHoroscope = useMemo(() => {
     if (!data?.horoscope) return [];
@@ -308,6 +413,34 @@ export default function HomePage() {
                           </span>
                           <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>{getLucky(item)}</span>
                         </div>
+                      </div>
+
+                      {/* 좋아요 버튼 */}
+                      <div className="flex justify-end mt-3">
+                        <button
+                          onClick={() => handleLike(getSignKey(item))}
+                          disabled={likedSigns.has(getZodiacCode(item)) || likingInProgress === getZodiacCode(item)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                            likedSigns.has(getZodiacCode(item))
+                              ? 'cursor-default'
+                              : 'hover:scale-105 active:scale-95'
+                          }`}
+                          style={{
+                            background: likedSigns.has(getZodiacCode(item))
+                              ? 'linear-gradient(135deg, #f43f5e, #ec4899)'
+                              : 'var(--bg-accent)',
+                            color: likedSigns.has(getZodiacCode(item))
+                              ? 'white'
+                              : 'var(--text-muted)',
+                            opacity: likingInProgress === getZodiacCode(item) ? 0.7 : 1,
+                          }}
+                          aria-label={t('like_aria', { sign: getSignName(item) })}
+                        >
+                          <Heart
+                            className={`w-4 h-4 ${likedSigns.has(getZodiacCode(item)) ? 'fill-current' : ''}`}
+                          />
+                          <span>{likes[getZodiacCode(item)] || 0}</span>
+                        </button>
                       </div>
                     </div>
                   </div>
