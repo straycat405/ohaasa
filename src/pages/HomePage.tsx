@@ -85,6 +85,7 @@ export default function HomePage() {
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [likedSigns, setLikedSigns] = useState<Set<string>>(new Set());
   const [likingInProgress, setLikingInProgress] = useState<string | null>(null);
+  const [visitors, setVisitors] = useState<{ total: number; today: number; yesterday: number }>({ total: 0, today: 0, yesterday: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,6 +149,48 @@ export default function HomePage() {
     // 30초마다 폴링
     const interval = setInterval(fetchLikes, 30000);
     return () => clearInterval(interval);
+  }, []);
+
+  // 방문자 카운터
+  useEffect(() => {
+    const todayKey = `visited_${new Date().toISOString().slice(0, 10)}`;
+
+    const recordVisit = async () => {
+      // 오늘 이미 기록했는지 확인
+      if (localStorage.getItem(todayKey)) {
+        // 이미 기록함 → GET만 호출
+        try {
+          const res = await fetch('/api/visitors');
+          if (res.ok) {
+            const data = await res.json();
+            setVisitors({ total: data.total, today: data.today, yesterday: data.yesterday });
+          }
+        } catch (err) {
+          console.error('Failed to fetch visitors:', err);
+        }
+        return;
+      }
+
+      // 첫 방문 → POST로 기록
+      try {
+        const res = await fetch('/api/visitors', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          setVisitors({ total: data.total, today: data.today, yesterday: 0 });
+          localStorage.setItem(todayKey, '1');
+          // yesterday는 별도 GET으로
+          const getRes = await fetch('/api/visitors');
+          if (getRes.ok) {
+            const getData = await getRes.json();
+            setVisitors({ total: getData.total, today: getData.today, yesterday: getData.yesterday });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to record visit:', err);
+      }
+    };
+
+    recordVisit();
   }, []);
 
   // 좋아요 처리 함수
@@ -358,6 +401,17 @@ export default function HomePage() {
                     </button>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            {/* 방문자 카운터 */}
+            <div className="flex justify-center sm:justify-end mt-3 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <div className="flex items-center gap-3">
+                <span>Total <strong style={{ color: 'var(--text-primary)' }}>{visitors.total.toLocaleString()}</strong></span>
+                <span className="opacity-50">|</span>
+                <span>Today <strong style={{ color: 'var(--text-primary)' }}>{visitors.today.toLocaleString()}</strong></span>
+                <span className="opacity-50">|</span>
+                <span>Yesterday <strong style={{ color: 'var(--text-primary)' }}>{visitors.yesterday.toLocaleString()}</strong></span>
               </div>
             </div>
           </div>
