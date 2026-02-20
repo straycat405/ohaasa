@@ -84,7 +84,6 @@ export default function HomePage() {
   const [errorDesc, setErrorDesc] = useState<string | null>(null);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [likedSigns, setLikedSigns] = useState<Set<string>>(new Set());
-  const [likingInProgress, setLikingInProgress] = useState<string | null>(null);
   const [visitors, setVisitors] = useState<{ total: number; today: number; yesterday: number }>({ total: 0, today: 0, yesterday: 0 });
 
   useEffect(() => {
@@ -193,13 +192,18 @@ export default function HomePage() {
     recordVisit();
   }, []);
 
-  // 좋아요 처리 함수
+  // 좋아요 처리 함수 (Optimistic UI)
   const handleLike = async (zodiacEnName: string) => {
     const zodiacCode = ZODIAC_TO_CODE[zodiacEnName];
-    if (!zodiacCode || likedSigns.has(zodiacCode) || likingInProgress) return;
+    if (!zodiacCode || likedSigns.has(zodiacCode)) return;
 
-    setLikingInProgress(zodiacCode);
+    // Optimistic: 즉시 UI 업데이트
+    const previousLikes = likes[zodiacCode] || 0;
+    setLikes(prev => ({ ...prev, [zodiacCode]: previousLikes + 1 }));
+    setLikedSigns(prev => new Set([...prev, zodiacCode]));
+    saveLikedSign(zodiacCode);
 
+    // 백그라운드에서 API 호출
     try {
       const clientId = getClientId();
       const response = await fetch('/api/likes', {
@@ -211,19 +215,19 @@ export default function HomePage() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // 성공: 상태 업데이트
+        // 서버 값으로 동기화 (다른 사용자 좋아요 반영)
         setLikes(prev => ({ ...prev, [zodiacCode]: result.count }));
-        setLikedSigns(prev => new Set([...prev, zodiacCode]));
-        saveLikedSign(zodiacCode);
-      } else if (result.code === 'ALREADY_LIKED') {
-        // 이미 좋아요한 경우: localStorage 동기화
-        setLikedSigns(prev => new Set([...prev, zodiacCode]));
-        saveLikedSign(zodiacCode);
       }
+      // ALREADY_LIKED인 경우 이미 UI 업데이트됨, 유지
     } catch (err) {
+      // 실패 시 롤백
       console.error('Failed to like:', err);
-    } finally {
-      setLikingInProgress(null);
+      setLikes(prev => ({ ...prev, [zodiacCode]: previousLikes }));
+      setLikedSigns(prev => {
+        const next = new Set([...prev]);
+        next.delete(zodiacCode);
+        return next;
+      });
     }
   };
 
@@ -492,7 +496,7 @@ export default function HomePage() {
                       <div className="flex justify-end mt-3">
                         <button
                           onClick={() => handleLike(getSignKey(item))}
-                          disabled={likedSigns.has(getZodiacCode(item)) || likingInProgress === getZodiacCode(item)}
+                          disabled={likedSigns.has(getZodiacCode(item))}
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
                             likedSigns.has(getZodiacCode(item))
                               ? 'cursor-default'
@@ -505,7 +509,6 @@ export default function HomePage() {
                             color: likedSigns.has(getZodiacCode(item))
                               ? 'white'
                               : 'var(--text-muted)',
-                            opacity: likingInProgress === getZodiacCode(item) ? 0.7 : 1,
                           }}
                           aria-label={t('like_aria', { sign: getSignName(item) })}
                         >
