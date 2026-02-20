@@ -267,10 +267,3 @@ body {
   --star-gold: rgba(251, 191, 36, 0.8);
 }
 
-/* 좋아요 버스트 애니메이션 */
-@keyframes likeBurst0 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(20px, 0) scale(0); opacity: 0; } }
-@keyframes likeBurst1 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, 17px) scale(0); opacity: 0; } }
-@keyframes likeBurst2 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, 17px) scale(0); opacity: 0; } }
-@keyframes likeBurst3 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-20px, 0) scale(0); opacity: 0; } }
-@keyframes likeBurst4 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(-10px, -17px) scale(0); opacity: 0; } }
-@keyframes likeBurst5 { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(10px, -17px) scale(0); opacity: 0; } }
