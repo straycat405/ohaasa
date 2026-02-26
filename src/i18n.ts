@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   ko: {
     translation: {
-      title: '오늘의 별자리 운세',
+      title: '오하아사 - 오늘자 순위',
       subtitle: '아사히 TV "오하아사" 기준 별자리 순위',
       update_notice: '매일 아침 7시 업데이트',
       rank: '위',
@@ -65,7 +65,7 @@ const resources = {
   },
   ja: {
     translation: {
-      title: '今日の星座占い',
+      title: 'オハアサ - 今日のランキング',
       subtitle: '朝日放送「おはよう朝日です」より',
       update_notice: '毎朝7時更新',
       rank: '位',
@@ -126,7 +126,7 @@ const resources = {
   },
   en: {
     translation: {
-      title: 'Daily Horoscope',
+      title: 'Ohaasa - Today\'s Ranking',
       subtitle: 'Based on Asahi TV "Oha-Asa" Rankings',
       update_notice: 'Updated daily at 7 AM',
       rank: 'st/nd/rd/th',
